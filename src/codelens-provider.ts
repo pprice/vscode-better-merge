@@ -29,7 +29,7 @@ export default class MergeConflictCodeLensProvider implements vscode.CodeLensPro
     }
 
     dispose() {
-        if(this.disposables) {
+        if (this.disposables) {
             this.disposables.forEach(disposable => disposable.dispose());
             this.disposables = null;
         }
@@ -41,7 +41,9 @@ export default class MergeConflictCodeLensProvider implements vscode.CodeLensPro
         }
 
         let items: vscode.CodeLens[] = [];
-        MergeConflictParser.scanDocument(document).forEach(conflict => {
+        let conflicts = MergeConflictParser.scanDocument(document);
+
+        conflicts.forEach(conflict => {
             let acceptOursCommand: vscode.Command = {
                 command: 'better-merge.accept.ours',
                 title: `Accept Our Change`,
@@ -53,6 +55,7 @@ export default class MergeConflictCodeLensProvider implements vscode.CodeLensPro
                 title: `Accept Their Change`,
                 arguments: [conflict]
             };
+
             items.push(new vscode.CodeLens(conflict.range, acceptOursCommand));
             items.push(new vscode.CodeLens(conflict.range, acceptTheirsCommand));
         });
