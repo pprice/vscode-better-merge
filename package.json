@@ -7,6 +7,10 @@
     "engines": {
         "vscode": "^1.5.0"
     },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/pprice/vscode-better-merge.git"
+    },
     "categories": [
         "Other"
     ],
