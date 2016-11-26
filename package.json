@@ -2,11 +2,12 @@
     "name": "better-merge",
     "displayName": "Better Merge",
     "description": "Improved merge conflict support",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "publisher": "pprice",
     "engines": {
         "vscode": "^1.5.0"
     },
+    "icon": "img/app.png",
     "repository": {
         "type": "git",
         "url": "https://github.com/pprice/vscode-better-merge.git"

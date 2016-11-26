@@ -4,10 +4,17 @@ Better visual merge conflict support for [Visual Studio Code](http://code.visual
 
 ![Demo animation 1](content/1.gif)
 
+Avaliable on the [Visual Studio Extension Marketplace](https://marketplace.visualstudio.com/items?itemName=pprice.better-merge).
+
 ## Features
 
  - Indivual conflicts are highlighted in each file
  - CodeLens actions to either accept "our" or "their" change
+
+## Installation
+
+- `Ctrl+P` (windows) `Cmd+P` (mac)
+- Type in `ext install better-merge` and press `enter`
 
 ## TODO
 
