@@ -2,7 +2,7 @@
 
 Better visual merge conflict support for [Visual Studio Code](http://code.visualstudio.com/), insired by [merge-conflicts](https://atom.io/packages/merge-conflicts) for Atom.
 
-![](./content/1.gif)
+![Demo animation 1](content/1.gif)
 
 ## Features
 
