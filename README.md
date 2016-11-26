@@ -20,5 +20,5 @@ Better visual merge conflict support for [Visual Studio Code](http://code.visual
  - [ ] Support non git conflicts
 
 ## Release Notes
-
-None yet, still work in progress.
+### 0.1.3
+Initial working version
