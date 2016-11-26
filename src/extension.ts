@@ -1,20 +1,20 @@
 'use strict';
 import * as vscode from 'vscode';
-import MergeDecoratorService from './merge-decorator-service';
-import CodeLensProvider from './codelens-provider';
+import MergeDecoratorService from './mergeDecorator';
+import CodeLensProvider from './codeLensProvider';
+import DocumentTracker from './documentTracker';
 
 export function activate(context: vscode.ExtensionContext) {
 
-    console.log('better-merge activated');
-
-    // Listen for active editor changes
-    const mergeDecorator = new MergeDecoratorService(context);
-    const codeLensProvider = new CodeLensProvider(context);
+    const documentTracker = new DocumentTracker();
+    const mergeDecorator = new MergeDecoratorService(context, documentTracker);
+    const codeLensProvider = new CodeLensProvider(context, documentTracker);
     mergeDecorator.begin();
     codeLensProvider.begin();
 
     // Register disposables
     context.subscriptions.push(
+        documentTracker,
         mergeDecorator,
         codeLensProvider
     );

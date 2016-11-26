@@ -1,19 +1,16 @@
 import * as vscode from 'vscode';
+import * as interfaces from './interfaces';
 
-export interface IMergeRegion {
-    name: string,
-    header: vscode.Range,
-    content: vscode.Range
-}
-
-export class DocumentMergeConflict {
+export class DocumentMergeConflict implements interfaces.IDocumentMergeConflict {
 
     public range: vscode.Range;
-    public ours: IMergeRegion;
-    public theirs: IMergeRegion;
+    public ours: interfaces.IMergeRegion;
+    public theirs: interfaces.IMergeRegion;
     public splitter: vscode.Range;
 
     constructor(document: vscode.TextDocument, match: RegExpExecArray, offsets?: number[]) {
+        this.range = new vscode.Range(document.positionAt(match.index), document.positionAt(match.index + match[0].length));
+
         this.ours = {
             name: match[2],
             header: this.getMatchPositions(document, match, 1, offsets),
@@ -28,15 +25,15 @@ export class DocumentMergeConflict {
             content: this.getMatchPositions(document, match, 6, offsets),
         }
 
-        this.range = this.getMatchPositions(document, match, 0, offsets);
     }
 
-    public commitOursEdit(editor : vscode.TextEditor, edit: vscode.TextEditorEdit) {
-        edit.replace(this.range, editor.document.getText(this.ours.content));
-    }
-
-    public commitTheirsEdit(editor : vscode.TextEditor, edit: vscode.TextEditorEdit) {
-        edit.replace(this.range, editor.document.getText(this.theirs.content));
+    public commitEdit(type: interfaces.CommitType, editor: vscode.TextEditor, edit: vscode.TextEditorEdit) {
+        if (type == interfaces.CommitType.Ours) {
+            edit.replace(this.range, editor.document.getText(this.ours.content));
+        }
+        else if (type == interfaces.CommitType.Theirs) {
+            edit.replace(this.range, editor.document.getText(this.theirs.content));
+        }
     }
 
     private getMatchPositions(document: vscode.TextDocument, match: RegExpExecArray, groupIndex: number, offsetGroups?: number[]): vscode.Range {
@@ -76,9 +73,9 @@ export class DocumentMergeConflict {
     }
 }
 
-class MergeConflictParser {
+export class MergeConflictParser {
 
-    scanDocument(document: vscode.TextDocument): DocumentMergeConflict[] {
+    static scanDocument(document: vscode.TextDocument): DocumentMergeConflict[] {
 
         // Match groups
         // 1: "our" header
@@ -109,7 +106,7 @@ class MergeConflictParser {
         return result;
     }
 
-    containsConflict(document: vscode.TextDocument): boolean {
+    static containsConflict(document: vscode.TextDocument): boolean {
         if (!document) {
             return false;
         }
@@ -120,6 +117,3 @@ class MergeConflictParser {
     }
 
 }
-
-export default new MergeConflictParser();
-

@@ -23,8 +23,8 @@ Avaliable on the [Visual Studio Extension Marketplace](https://marketplace.visua
  - [ ] Add "accept all theirs" / "accept all ours"
  - [ ] Test on light and dark themes
  - [ ] Add keyboard shortcuts for accept actions
- - [ ] Unify file scanning for merge conflicts, currently done twice for lenses and decorations
  - [ ] Support non git conflicts
+ - [ ] Async scanning of documents
 
 ## Release Notes
 ### 0.1.3

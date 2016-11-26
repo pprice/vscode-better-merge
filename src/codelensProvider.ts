@@ -1,13 +1,12 @@
 
 import * as vscode from 'vscode';
-import MergeConflictParser, { DocumentMergeConflict } from './merge-conflict-parser';
+import * as interfaces from './interfaces';
 
 export default class MergeConflictCodeLensProvider implements vscode.CodeLensProvider, vscode.Disposable {
 
     private disposables: vscode.Disposable[] = [];
 
-    constructor(private context: vscode.ExtensionContext) {
-
+    constructor(private context: vscode.ExtensionContext, private tracker: interfaces.IDocumentMergeConflictTracker) {
     }
 
     begin() {
@@ -16,14 +15,14 @@ export default class MergeConflictCodeLensProvider implements vscode.CodeLensPro
             vscode.commands.registerTextEditorCommand('better-merge.accept.ours', (editor, edit, ...args) => {
                 if (!args[0]) { return; }
 
-                const conflict: DocumentMergeConflict = args[0];
-                conflict.commitOursEdit(editor, edit);
+                const conflict: interfaces.IDocumentMergeConflict = args[0];
+                conflict.commitEdit(interfaces.CommitType.Ours, editor, edit);
             }),
             vscode.commands.registerTextEditorCommand('better-merge.accept.theirs', (editor, edit, ...args) => {
                 if (!args[0]) { return; }
 
-                const conflict: DocumentMergeConflict = args[0];
-                conflict.commitTheirsEdit(editor, edit);
+                const conflict: interfaces.IDocumentMergeConflict = args[0];
+                conflict.commitEdit(interfaces.CommitType.Theirs, editor, edit);
             })
         );
     }
@@ -36,12 +35,14 @@ export default class MergeConflictCodeLensProvider implements vscode.CodeLensPro
     }
 
     provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.CodeLens[] {
-        if (!MergeConflictParser.containsConflict(document)) {
+
+        let conflicts = this.tracker.getConflicts(document);
+
+        if (!conflicts || conflicts.length == 0) {
             return null;
         }
 
         let items: vscode.CodeLens[] = [];
-        let conflicts = MergeConflictParser.scanDocument(document);
 
         conflicts.forEach(conflict => {
             let acceptOursCommand: vscode.Command = {
