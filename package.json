@@ -3,7 +3,7 @@
     "displayName": "vscode-better-merge",
     "description": "Improved merge conflict support",
     "version": "0.0.1",
-    "publisher": "philprice",
+    "publisher": "pprice",
     "engines": {
         "vscode": "^1.5.0"
     },
