@@ -23,15 +23,15 @@ export class DocumentMergeConflict implements interfaces.IDocumentMergeConflict 
             name: match[9],
             header: this.getMatchPositions(document, match, 8, offsets),
             content: this.getMatchPositions(document, match, 6, offsets),
-        }
+        };
 
     }
 
     public commitEdit(type: interfaces.CommitType, editor: vscode.TextEditor, edit: vscode.TextEditorEdit) {
-        if (type == interfaces.CommitType.Ours) {
+        if (type === interfaces.CommitType.Ours) {
             edit.replace(this.range, editor.document.getText(this.ours.content));
         }
-        else if (type == interfaces.CommitType.Theirs) {
+        else if (type === interfaces.CommitType.Theirs) {
             edit.replace(this.range, editor.document.getText(this.theirs.content));
         }
     }

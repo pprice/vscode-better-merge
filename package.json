@@ -19,7 +19,30 @@
         "*"
     ],
     "main": "./out/src/extension",
-    "contributes": { },
+    "contributes": {
+        "commands": [
+            {
+                "category": "Better Merge",
+                "title": "Accept all ours (current file)",
+                "command": "better-merge.accept.all-ours"
+            },
+            {
+                "category": "Better Merge",
+                "title": "Accept all theirs (current file)",
+                "command": "better-merge.accept.all-theirs"
+            },
+            {
+                "category": "Better Merge",
+                "title": "Accept ours (current conflict)",
+                "command": "better-merge.accept.ours"
+            },
+            {
+                "category": "Better Merge",
+                "title": "Accept theirs (current conflict)",
+                "command": "better-merge.accept.theirs"
+            }
+        ]
+    },
     "scripts": {
         "vscode:prepublish": "tsc -p ./",
         "compile": "tsc -watch -p ./",

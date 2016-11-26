@@ -1,23 +1,23 @@
 import * as vscode from 'vscode';
-import { MergeConflictParser, DocumentMergeConflict } from './mergeConflictParser'
+import { MergeConflictParser } from './mergeConflictParser';
 import * as interfaces from './interfaces';
 
 interface IMergeConflictCacheItem {
-    ts: Date,
+    ts: Date;
     hasConflicts: boolean;
-    conflicts: interfaces.IDocumentMergeConflict[]
+    conflicts: interfaces.IDocumentMergeConflict[];
 }
 
 export default class DocumentMergeConflictTracker implements vscode.Disposable, interfaces.IDocumentMergeConflictTracker {
 
     private cache: Map<string, IMergeConflictCacheItem> = new Map();
-    private cacheExperiatinMilliseconds: number = 250;
+    private cacheExperiatinMilliseconds: number = 100;
 
     getConflicts(document: vscode.TextDocument): interfaces.IDocumentMergeConflict[] {
         // Attempt from cache
 
         let cacheItem: IMergeConflictCacheItem = null;
-        let key = this.getCacheKey(document);
+    let key = this.getCacheKey(document);
 
         if (key) {
             cacheItem = this.cache.get(key);
@@ -43,12 +43,12 @@ export default class DocumentMergeConflictTracker implements vscode.Disposable, 
         return cacheItem.conflicts;
     }
 
-    getCacheKey(document: vscode.TextDocument) {
-        if (document.uri && document.uri.path) {
-            return document.uri.path;
-        }
+    forget(document: vscode.TextDocument) {
+        let key = this.getCacheKey(document);
 
-        return null;
+        if (key) {
+            this.cache.delete(key);
+        }
     }
 
     dispose() {
@@ -58,4 +58,11 @@ export default class DocumentMergeConflictTracker implements vscode.Disposable, 
         }
     }
 
+    private getCacheKey(document: vscode.TextDocument) {
+        if (document.uri && document.uri.path) {
+            return document.uri.path;
+        }
+
+        return null;
+    }
 }

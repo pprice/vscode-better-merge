@@ -91,7 +91,7 @@ export default class MergeDectorator implements vscode.Disposable {
 
     private applyDecorationsFromEvent(eventDocument : vscode.TextDocument) {
         for (var i = 0; i < vscode.window.visibleTextEditors.length; i++) {
-            if (vscode.window.visibleTextEditors[i].document == eventDocument) {
+            if (vscode.window.visibleTextEditors[i].document === eventDocument) {
                 // Attempt to apply
                 this.applyDecorations(vscode.window.visibleTextEditors[i]);
             }
@@ -103,7 +103,7 @@ export default class MergeDectorator implements vscode.Disposable {
 
         let conflicts = this.tracker.getConflicts(editor.document);
 
-        if (conflicts.length == 0) {
+        if (conflicts.length === 0) {
             // TODO: Remove decorations
             this.removeDecorations(editor);
             return;
@@ -131,7 +131,7 @@ export default class MergeDectorator implements vscode.Disposable {
         // editor instance. Keys in both matches and decorations should match.
         Object.keys(matchDecorations).forEach(decorationSetName => {
             editor.setDecorations(this.decorations[decorationSetName], matchDecorations[decorationSetName]);
-        })
+        });
     }
 
     private removeDecorations(editor: vscode.TextEditor) {

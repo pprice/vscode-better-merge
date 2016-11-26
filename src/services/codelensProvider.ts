@@ -11,19 +11,7 @@ export default class MergeConflictCodeLensProvider implements vscode.CodeLensPro
 
     begin() {
         this.disposables.push(
-            vscode.languages.registerCodeLensProvider({ pattern: '**/*' }, this),
-            vscode.commands.registerTextEditorCommand('better-merge.accept.ours', (editor, edit, ...args) => {
-                if (!args[0]) { return; }
-
-                const conflict: interfaces.IDocumentMergeConflict = args[0];
-                conflict.commitEdit(interfaces.CommitType.Ours, editor, edit);
-            }),
-            vscode.commands.registerTextEditorCommand('better-merge.accept.theirs', (editor, edit, ...args) => {
-                if (!args[0]) { return; }
-
-                const conflict: interfaces.IDocumentMergeConflict = args[0];
-                conflict.commitEdit(interfaces.CommitType.Theirs, editor, edit);
-            })
+            vscode.languages.registerCodeLensProvider({ pattern: '**/*' }, this)
         );
     }
 
@@ -38,7 +26,7 @@ export default class MergeConflictCodeLensProvider implements vscode.CodeLensPro
 
         let conflicts = this.tracker.getConflicts(document);
 
-        if (!conflicts || conflicts.length == 0) {
+        if (!conflicts || conflicts.length === 0) {
             return null;
         }
 
@@ -48,13 +36,13 @@ export default class MergeConflictCodeLensProvider implements vscode.CodeLensPro
             let acceptOursCommand: vscode.Command = {
                 command: 'better-merge.accept.ours',
                 title: `Accept Our Changes`,
-                arguments: [conflict]
+                arguments: ['known-conflict', conflict]
             };
 
             let acceptTheirsCommand: vscode.Command = {
                 command: 'better-merge.accept.theirs',
                 title: `Accept Their Changes`,
-                arguments: [conflict]
+                arguments: ['known-conflict', conflict]
             };
 
             items.push(new vscode.CodeLens(conflict.range, acceptOursCommand));

@@ -1,10 +1,9 @@
 import * as vscode from 'vscode';
 
-
 export interface IMergeRegion {
-    name: string,
-    header: vscode.Range,
-    content: vscode.Range
+    name: string;
+    header: vscode.Range;
+    content: vscode.Range;
 }
 
 export enum CommitType {
@@ -23,4 +22,5 @@ export interface IDocumentMergeConflict {
 
 export interface IDocumentMergeConflictTracker {
     getConflicts(document: vscode.TextDocument): IDocumentMergeConflict[];
+    forget(document : vscode.TextDocument);
 }
