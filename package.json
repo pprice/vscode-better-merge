@@ -1,9 +1,16 @@
 {
     "name": "better-merge",
     "displayName": "Better Merge",
-    "description": "Improved merge conflict support",
-    "version": "0.1.4",
+    "description": "Improved git merge conflict support",
+    "version": "0.2.0",
     "publisher": "pprice",
+    "author": {
+        "name": "Phil Price",
+        "url": "https://philprice.me"
+    },
+    "bugs": {
+        "url": "https://github.com/pprice/vscode-better-merge/issues"
+    },
     "engines": {
         "vscode": "^1.5.0"
     },
@@ -19,7 +26,72 @@
         "*"
     ],
     "main": "./out/src/extension",
-    "contributes": { },
+    "contributes": {
+        "commands": [
+            {
+                "category": "Better Merge",
+                "title": "Accept all ours (current file)",
+                "command": "better-merge.accept.all-ours"
+            },
+            {
+                "category": "Better Merge",
+                "title": "Accept all theirs (current file)",
+                "command": "better-merge.accept.all-theirs"
+            },
+            {
+                "category": "Better Merge",
+                "title": "Accept ours (current conflict)",
+                "command": "better-merge.accept.ours"
+            },
+            {
+                "category": "Better Merge",
+                "title": "Accept theirs (current conflict)",
+                "command": "better-merge.accept.theirs"
+            },
+            {
+                "category": "Better Merge",
+                "title": "Accept Current",
+                "command": "better-merge.accept.current"
+            },
+            {
+                "category": "Better Merge",
+                "title": "Next conflict",
+                "command": "better-merge.next"
+            },
+            {
+                "category": "Better Merge",
+                "title": "Previous conflict",
+                "command": "better-merge.previous"
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "better-merge.next",
+                "when": "editorTextFocus",
+                "key": "alt+m down"
+            },
+            {
+                "command": "better-merge.previous",
+                "when": "editorTextFocus",
+                "key": "alt+m up"
+            },
+            {
+                "command": "better-merge.accept.current",
+                "when": "editorTextFocus",
+                "key": "alt+m enter"
+            },
+            {
+                "command": "better-merge.accept.ours",
+                "when": "editorTextFocus",
+                "key": "alt+m 1"
+            },
+            {
+                "command": "better-merge.accept.theirs",
+                "when": "editorTextFocus",
+                "key": "alt+m 2"
+            }
+        ]
+    },
     "scripts": {
         "vscode:prepublish": "tsc -p ./",
         "compile": "tsc -watch -p ./",

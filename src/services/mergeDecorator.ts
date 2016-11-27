@@ -1,7 +1,8 @@
 import * as vscode from 'vscode';
-import MergeConflictParser from './merge-conflict-parser';
+import * as interfaces from './interfaces';
 
-export default class MergeDectoratorService implements vscode.Disposable {
+
+export default class MergeDectorator implements vscode.Disposable {
 
     private decorations: { [key: string]: vscode.TextEditorDecorationType } = {};
 
@@ -11,7 +12,7 @@ export default class MergeDectoratorService implements vscode.Disposable {
     private oursColorRgb = `32,200,94`;
     private theirsColorRgb = `24,134,255`;
 
-    constructor(private context: vscode.ExtensionContext) {
+    constructor(private context: vscode.ExtensionContext, private tracker : interfaces.IDocumentMergeConflictTracker ) {
         // Create decorators
         this.decorations['ours.content'] = vscode.window.createTextEditorDecorationType({
             backgroundColor: `rgba(${this.oursColorRgb}, 0.2)`,
@@ -24,7 +25,7 @@ export default class MergeDectoratorService implements vscode.Disposable {
             // backgroundColor: 'rgba(255, 0, 0, 0.01)',
             // border: '2px solid red',
             isWholeLine: this.decorationUsesWholeLine,
-            backgroundColor: `rgba(${this.oursColorRgb}, 0.8)`,
+            backgroundColor: `rgba(${this.oursColorRgb}, 1.0)`,
             color: 'white',
             after: {
                 contentText: ' (Our Changes)',
@@ -36,6 +37,7 @@ export default class MergeDectoratorService implements vscode.Disposable {
 
         this.decorations['splitter'] = vscode.window.createTextEditorDecorationType({
             backgroundColor: 'rgba(0, 0, 0, 0.25)',
+            color: 'white',
             isWholeLine: this.decorationUsesWholeLine,
         });
 
@@ -47,7 +49,7 @@ export default class MergeDectoratorService implements vscode.Disposable {
         });
 
         this.decorations['theirs.header'] = vscode.window.createTextEditorDecorationType({
-            backgroundColor: `rgba(${this.theirsColorRgb}, 0.8)`,
+            backgroundColor: `rgba(${this.theirsColorRgb}, 1.0)`,
             color: 'white',
             isWholeLine: this.decorationUsesWholeLine,
             after: {
@@ -61,21 +63,21 @@ export default class MergeDectoratorService implements vscode.Disposable {
         // Check if we already have a set of active windows, attempt to track these.
         vscode.window.visibleTextEditors.forEach(e => this.applyDecorations(e));
 
+        vscode.workspace.onDidOpenTextDocument(event => {
+            this.applyDecorationsFromEvent(event);
+        }, null, this.context.subscriptions);
+
         vscode.workspace.onDidChangeTextDocument(event => {
-            // Is this window visible?
-            for (var i = 0; i < vscode.window.visibleTextEditors.length; i++) {
-                if (vscode.window.visibleTextEditors[i].document == event.document) {
-                    // Attempt to apply
-                    this.applyDecorations(vscode.window.visibleTextEditors[i]);
-                }
-            }
+            this.applyDecorationsFromEvent(event.document);
         }, null, this.context.subscriptions);
 
         vscode.window.onDidChangeActiveTextEditor((e) => {
             // New editor attempt to apply
             this.applyDecorations(e);
-        })
+        }, null, this.context.subscriptions);
     }
+
+
 
     dispose() {
         if (this.decorations) {
@@ -87,10 +89,21 @@ export default class MergeDectoratorService implements vscode.Disposable {
         }
     }
 
+    private applyDecorationsFromEvent(eventDocument : vscode.TextDocument) {
+        for (var i = 0; i < vscode.window.visibleTextEditors.length; i++) {
+            if (vscode.window.visibleTextEditors[i].document === eventDocument) {
+                // Attempt to apply
+                this.applyDecorations(vscode.window.visibleTextEditors[i]);
+            }
+        }
+    }
+
     private applyDecorations(editor: vscode.TextEditor) {
         if (!editor) { return; }
 
-        if (!MergeConflictParser.containsConflict(editor.document)) {
+        let conflicts = this.tracker.getConflicts(editor.document);
+
+        if (conflicts.length === 0) {
             // TODO: Remove decorations
             this.removeDecorations(editor);
             return;
@@ -105,7 +118,7 @@ export default class MergeDectoratorService implements vscode.Disposable {
             matchDecorations[key].push(d);
         };
 
-        MergeConflictParser.scanDocument(editor.document).forEach(conflict => {
+        conflicts.forEach(conflict => {
             // TODO, this could be more effective, just call getMatchPositions once with a map of decoration to position
             pushDecoration('ours.header', { range: conflict.ours.header });
             pushDecoration('ours.content', { range: conflict.ours.content });
@@ -118,7 +131,7 @@ export default class MergeDectoratorService implements vscode.Disposable {
         // editor instance. Keys in both matches and decorations should match.
         Object.keys(matchDecorations).forEach(decorationSetName => {
             editor.setDecorations(this.decorations[decorationSetName], matchDecorations[decorationSetName]);
-        })
+        });
     }
 
     private removeDecorations(editor: vscode.TextEditor) {
