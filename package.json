@@ -40,6 +40,48 @@
                 "category": "Better Merge",
                 "title": "Accept theirs (current conflict)",
                 "command": "better-merge.accept.theirs"
+            },
+            {
+                "category": "Better Merge",
+                "title": "Accept Current",
+                "command": "better-merge.accept.current"
+            },
+            {
+                "category": "Better Merge",
+                "title": "Next conflict",
+                "command": "better-merge.next"
+            },
+            {
+                "category": "Better Merge",
+                "title": "Previous conflict",
+                "command": "better-merge.previous"
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "better-merge.next",
+                "when": "editorTextFocus",
+                "key": "alt+m down"
+            },
+            {
+                "command": "better-merge.previous",
+                "when": "editorTextFocus",
+                "key": "alt+m up"
+            },
+            {
+                "command": "better-merge.accept.current",
+                "when": "editorTextFocus",
+                "key": "alt+m enter"
+            },
+            {
+                "command": "better-merge.accept.ours",
+                "when": "editorTextFocus",
+                "key": "alt+m 1"
+            },
+            {
+                "command": "better-merge.accept.theirs",
+                "when": "editorTextFocus",
+                "key": "alt+m 2"
             }
         ]
     },
