@@ -4,6 +4,13 @@
     "description": "Improved git merge conflict support",
     "version": "0.2.0",
     "publisher": "pprice",
+    "author": {
+        "name": "Phil Price",
+        "url": "https://philprice.me"
+    },
+    "bugs": {
+        "url": "https://github.com/pprice/vscode-better-merge/issues"
+    },
     "engines": {
         "vscode": "^1.5.0"
     },
