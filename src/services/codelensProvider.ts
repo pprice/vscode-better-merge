@@ -22,9 +22,9 @@ export default class MergeConflictCodeLensProvider implements vscode.CodeLensPro
         }
     }
 
-    provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.CodeLens[] {
+    async provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): Promise<vscode.CodeLens[]> {
 
-        let conflicts = this.tracker.getConflicts(document);
+        let conflicts = await this.tracker.getConflicts(document);
 
         if (!conflicts || conflicts.length === 0) {
             return null;

@@ -26,30 +26,43 @@ export default class CommandHandler implements vscode.Disposable {
     }
 
     begin() {
-
-        const textEditorCommand = (name: string, callback: any) => {
-            this.disposables.push(vscode.commands.registerTextEditorCommand(name, callback, this));
-        };
-
-        textEditorCommand('better-merge.accept.ours', this.acceptOurs);
-        textEditorCommand('better-merge.accept.theirs', this.acceptTheirs);
-        textEditorCommand('better-merge.accept.current', this.acceptCurrent);
-        textEditorCommand('better-merge.accept.all-ours', this.acceptAllOurs);
-        textEditorCommand('better-merge.accept.all-theirs', this.acceptAllTheirs);
-        textEditorCommand('better-merge.next', this.navigateNext);
-        textEditorCommand('better-merge.previous', this.navigatePrevious);
+        this.disposables.push(
+            vscode.commands.registerTextEditorCommand('better-merge.accept.ours', this.acceptOurs, this),
+            vscode.commands.registerTextEditorCommand('better-merge.accept.theirs', this.acceptTheirs, this),
+            vscode.commands.registerTextEditorCommand('better-merge.accept.current', this.acceptCurrent, this),
+            vscode.commands.registerTextEditorCommand('better-merge.accept.all-ours', this.acceptAllOurs, this),
+            vscode.commands.registerTextEditorCommand('better-merge.accept.all-theirs', this.acceptAllTheirs, this),
+            vscode.commands.registerTextEditorCommand('better-merge.next', this.navigateNext, this),
+            vscode.commands.registerTextEditorCommand('better-merge.previous', this.navigatePrevious, this)
+        );
     }
 
-    acceptOurs(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args) {
-        this.accept(interfaces.CommitType.Ours, editor, edit, ...args);
+    acceptOurs(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args): Promise<void> {
+        return this.accept(interfaces.CommitType.Ours, editor, ...args);
     }
 
-    acceptTheirs(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args) {
-        this.accept(interfaces.CommitType.Theirs, editor, edit, ...args);
+    acceptTheirs(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args): Promise<void> {
+        return this.accept(interfaces.CommitType.Theirs, editor, ...args);
     }
 
-    acceptCurrent(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args) {
-        let conflict = this.findConflictContainingSelection(editor);
+    acceptAllOurs(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args): Promise<void> {
+        return this.acceptAll(interfaces.CommitType.Ours, editor);
+    }
+
+    acceptAllTheirs(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args): Promise<void> {
+        return this.acceptAll(interfaces.CommitType.Theirs, editor);
+    }
+
+    navigateNext(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args): Promise<void> {
+        return this.navigate(editor, NavigationDirection.Forwards);
+    }
+
+    navigatePrevious(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args): Promise<void> {
+        return this.navigate(editor, NavigationDirection.Backwards);
+    }
+
+    async acceptCurrent(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args): Promise<void> {
+        let conflict = await this.findConflictContainingSelection(editor);
 
         if (!conflict) {
             vscode.window.showWarningMessage(messages.cursorNotInConflict);
@@ -75,27 +88,18 @@ export default class CommandHandler implements vscode.Disposable {
         }
 
         this.tracker.forget(editor.document);
-        conflict.commitEdit(typeToAccept, editor, edit);
+        conflict.commitEdit(typeToAccept, editor);
     }
 
-    acceptAllOurs(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args) {
-        this.acceptAll(interfaces.CommitType.Ours, editor, edit);
+    dispose() {
+        if (this.disposables) {
+            this.disposables.forEach(disposable => disposable.dispose());
+            this.disposables = null;
+        }
     }
 
-    acceptAllTheirs(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args) {
-        this.acceptAll(interfaces.CommitType.Theirs, editor, edit);
-    }
-
-    navigateNext(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args) {
-        this.navigate(editor, NavigationDirection.Forwards);
-    }
-
-    navigatePrevious(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args) {
-        this.navigate(editor, NavigationDirection.Backwards);
-    }
-
-    navigate(editor: vscode.TextEditor, direction: NavigationDirection) {
-        let navigationResult = this.findConflictForNavigation(editor, direction);
+    private async navigate(editor: vscode.TextEditor, direction: NavigationDirection): Promise<void> {
+        let navigationResult = await this.findConflictForNavigation(editor, direction);
 
         if (!navigationResult) {
             vscode.window.showWarningMessage(messages.noConflicts);
@@ -111,14 +115,7 @@ export default class CommandHandler implements vscode.Disposable {
         editor.revealRange(navigationResult.conflict.range, vscode.TextEditorRevealType.Default);
     }
 
-    dispose() {
-        if (this.disposables) {
-            this.disposables.forEach(disposable => disposable.dispose());
-            this.disposables = null;
-        }
-    }
-
-    private accept(type: interfaces.CommitType, editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args) {
+    private async accept(type: interfaces.CommitType, editor: vscode.TextEditor, ...args): Promise<void> {
 
         let conflict: interfaces.IDocumentMergeConflict = null;
 
@@ -128,7 +125,7 @@ export default class CommandHandler implements vscode.Disposable {
         }
         else {
             // Attempt to find a conflict that matches the current curosr position
-            conflict = this.findConflictContainingSelection(editor);
+            conflict = await this.findConflictContainingSelection(editor);
         }
 
         if (!conflict) {
@@ -138,11 +135,11 @@ export default class CommandHandler implements vscode.Disposable {
 
         // Tracker can forget as we know we are going to do an edit
         this.tracker.forget(editor.document);
-        conflict.commitEdit(type, editor, edit);
+        conflict.commitEdit(type, editor);
     }
 
-    private acceptAll(type: interfaces.CommitType, editor: vscode.TextEditor, edit: vscode.TextEditorEdit) {
-        let conflicts = this.tracker.getConflicts(editor.document);
+    private async acceptAll(type: interfaces.CommitType, editor: vscode.TextEditor): Promise<void> {
+        let conflicts = await this.tracker.getConflicts(editor.document);
 
         if (!conflicts || conflicts.length === 0) {
             vscode.window.showWarningMessage(messages.noConflicts);
@@ -152,15 +149,16 @@ export default class CommandHandler implements vscode.Disposable {
         // For get the current state of the document, as we know we are doing to do a large edit
         this.tracker.forget(editor.document);
 
-        conflicts.forEach(conflict => {
-            conflict.commitEdit(type, editor, edit);
-        });
+        // Apply all changes as one edit
+        await editor.edit((edit) => conflicts.forEach(conflict => {
+            conflict.applyEdit(type, editor, edit);
+        }));
     }
 
-    private findConflictContainingSelection(editor: vscode.TextEditor, conflicts?: interfaces.IDocumentMergeConflict[]): interfaces.IDocumentMergeConflict {
+    private async findConflictContainingSelection(editor: vscode.TextEditor, conflicts?: interfaces.IDocumentMergeConflict[]): Promise<interfaces.IDocumentMergeConflict> {
 
         if (!conflicts) {
-            conflicts = this.tracker.getConflicts(editor.document);
+            conflicts = await this.tracker.getConflicts(editor.document);
         }
 
         if (!conflicts || conflicts.length === 0) {
@@ -176,9 +174,9 @@ export default class CommandHandler implements vscode.Disposable {
         return null;
     }
 
-    private findConflictForNavigation(editor: vscode.TextEditor, direction: NavigationDirection, conflicts?: interfaces.IDocumentMergeConflict[]): IDocumentMergeConflictNavigationResults {
+    private async findConflictForNavigation(editor: vscode.TextEditor, direction: NavigationDirection, conflicts?: interfaces.IDocumentMergeConflict[]): Promise<IDocumentMergeConflictNavigationResults> {
         if (!conflicts) {
-            conflicts = this.tracker.getConflicts(editor.document);
+            conflicts = await this.tracker.getConflicts(editor.document);
         }
 
         if (!conflicts || conflicts.length === 0) {
