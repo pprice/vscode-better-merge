@@ -1,46 +1,38 @@
 import * as vscode from 'vscode';
 import { MergeConflictParser } from './mergeConflictParser';
 import * as interfaces from './interfaces';
-
-interface IMergeConflictCacheItem {
-    ts: Date;
-    hasConflicts: boolean;
-    conflicts: interfaces.IDocumentMergeConflict[];
-}
+import { Delayer } from '../delayer';
 
 export default class DocumentMergeConflictTracker implements vscode.Disposable, interfaces.IDocumentMergeConflictTracker {
 
-    private cache: Map<string, IMergeConflictCacheItem> = new Map();
-    private cacheExperiatinMilliseconds: number = 100;
+    private cache: Map<string, Delayer<interfaces.IDocumentMergeConflict[]>> = new Map();
+    private delayExpireTime: number = 150;
 
-    getConflicts(document: vscode.TextDocument): interfaces.IDocumentMergeConflict[] {
+    getConflicts(document: vscode.TextDocument): PromiseLike<interfaces.IDocumentMergeConflict[]> {
         // Attempt from cache
 
-        let cacheItem: IMergeConflictCacheItem = null;
-    let key = this.getCacheKey(document);
+        let key = this.getCacheKey(document);
 
-        if (key) {
-            cacheItem = this.cache.get(key);
+        if (!key) {
+            // Document doesnt have a uri, can't cache it, so return
+            return Promise.resolve(this.getConflictsOrEmpty(document));
         }
 
-        if (cacheItem && (new Date().getTime() - cacheItem.ts.getTime()) < this.cacheExperiatinMilliseconds) {
-            return cacheItem.conflicts;
-        }
-
-        // Regenerate
-        const conflicts = MergeConflictParser.containsConflict(document) ? MergeConflictParser.scanDocument(document) : [];
-
-        cacheItem = {
-            ts: new Date(),
-            hasConflicts: conflicts.length > 0,
-            conflicts: conflicts
-        };
-
-        if (key) {
+        let cacheItem: Delayer<interfaces.IDocumentMergeConflict[]> = this.cache.get(key);
+        if(!cacheItem) {
+            cacheItem = new Delayer<interfaces.IDocumentMergeConflict[]>(this.delayExpireTime);
             this.cache.set(key, cacheItem);
         }
 
-        return cacheItem.conflicts;
+        return cacheItem.trigger(() => {
+            let conflicts = this.getConflictsOrEmpty(document);
+
+            if(this.cache) {
+                this.cache.delete(key);
+            }
+
+            return conflicts;
+        });
     }
 
     forget(document: vscode.TextDocument) {
@@ -58,9 +50,13 @@ export default class DocumentMergeConflictTracker implements vscode.Disposable, 
         }
     }
 
+    private getConflictsOrEmpty(document : vscode.TextDocument) : interfaces.IDocumentMergeConflict[] {
+        return MergeConflictParser.containsConflict(document) ? MergeConflictParser.scanDocument(document) : [];
+    }
+
     private getCacheKey(document: vscode.TextDocument) {
-        if (document.uri && document.uri.path) {
-            return document.uri.path;
+        if (document.uri && document.uri) {
+            return document.uri.toString();
         }
 
         return null;

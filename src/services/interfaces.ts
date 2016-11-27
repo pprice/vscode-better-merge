@@ -17,10 +17,11 @@ export interface IDocumentMergeConflict {
     theirs: IMergeRegion;
     splitter: vscode.Range;
 
-    commitEdit(type: CommitType, editor: vscode.TextEditor, edit: vscode.TextEditorEdit);
+    commitEdit(type: CommitType, editor: vscode.TextEditor, edit?: vscode.TextEditorEdit);
+    applyEdit(type: CommitType, editor: vscode.TextEditor, edit: vscode.TextEditorEdit);
 }
 
 export interface IDocumentMergeConflictTracker {
-    getConflicts(document: vscode.TextDocument): IDocumentMergeConflict[];
+    getConflicts(document: vscode.TextDocument): PromiseLike<IDocumentMergeConflict[]>;
     forget(document : vscode.TextDocument);
 }

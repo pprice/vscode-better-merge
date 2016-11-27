@@ -98,10 +98,10 @@ export default class MergeDectorator implements vscode.Disposable {
         }
     }
 
-    private applyDecorations(editor: vscode.TextEditor) {
+    private async applyDecorations(editor: vscode.TextEditor) {
         if (!editor) { return; }
 
-        let conflicts = this.tracker.getConflicts(editor.document);
+        let conflicts = await this.tracker.getConflicts(editor.document);
 
         if (conflicts.length === 0) {
             // TODO: Remove decorations

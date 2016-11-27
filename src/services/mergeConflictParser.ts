@@ -27,7 +27,17 @@ export class DocumentMergeConflict implements interfaces.IDocumentMergeConflict 
 
     }
 
-    public commitEdit(type: interfaces.CommitType, editor: vscode.TextEditor, edit: vscode.TextEditorEdit) {
+    public commitEdit(type: interfaces.CommitType, editor: vscode.TextEditor, edit?: vscode.TextEditorEdit): Thenable<boolean> {
+
+        if (edit) {
+            this.applyEdit(type, editor, edit);
+            return Promise.resolve(true);
+        };
+
+        return editor.edit((edit) => this.applyEdit(type, editor, edit));
+    }
+
+    public applyEdit(type: interfaces.CommitType, editor: vscode.TextEditor, edit: vscode.TextEditorEdit) : void {
         if (type === interfaces.CommitType.Ours) {
             edit.replace(this.range, editor.document.getText(this.ours.content));
         }
