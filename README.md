@@ -14,13 +14,15 @@ Avaliable on the [Visual Studio Extension Marketplace](https://marketplace.visua
 
 ### Commands
 
- - `Accept ours` - `Alt+m, 1` - Accept "our" change in the current conflict
- - `Accept theirs` - `Alt+m, 2` - Accept "their" change in the current conflict
- - `Accept current` - `Alt+m, enter` - Accept the change the editor cursor is currenty within
- - `Next Conflict` - `Alm+m, down` - Navigate to the next conflict in the current file
- - `Previous Conflict` - `Alm+m, down` - Navigate to the previous conflict in the current file
- - `Accept all ours (current file)` - Accpect all "our" changes in the current file
- - `Accept all thiers (current file)` - Accept all "their" changes in the current file
+All commands use a double key chord combination by default. First press `Alt+M` then press the second key.
+
+ - `Accept ours` - `Alt+M, 1` - Accept "our" change in the current conflict
+ - `Accept theirs` - `Alt+M, 2` - Accept "their" change in the current conflict
+ - `Accept current` - `Alt+M, Enter` - Accept the change the editor cursor is currenty within
+ - `Next conflict` - `Alm+M, Down Arrow` - Navigate to the next conflict in the current file
+ - `Previous conflict` - `Alm+M, Down Arrow` - Navigate to the previous conflict in the current file
+ - `Accept all ours` - Accpect all "our" changes in the current file
+ - `Accept all thiers` - Accept all "their" changes in the current file
 
 *NOTE*: All accept commands can be undone with Undo (`Ctrl+Z` / `Cmd+Z`)
 

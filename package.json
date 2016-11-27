@@ -30,27 +30,27 @@
         "commands": [
             {
                 "category": "Better Merge",
-                "title": "Accept all ours (current file)",
+                "title": "Accept all ours",
                 "command": "better-merge.accept.all-ours"
             },
             {
                 "category": "Better Merge",
-                "title": "Accept all theirs (current file)",
+                "title": "Accept all theirs",
                 "command": "better-merge.accept.all-theirs"
             },
             {
                 "category": "Better Merge",
-                "title": "Accept ours (current conflict)",
+                "title": "Accept ours",
                 "command": "better-merge.accept.ours"
             },
             {
                 "category": "Better Merge",
-                "title": "Accept theirs (current conflict)",
+                "title": "Accept theirs",
                 "command": "better-merge.accept.theirs"
             },
             {
                 "category": "Better Merge",
-                "title": "Accept Current",
+                "title": "Accept current",
                 "command": "better-merge.accept.current"
             },
             {
