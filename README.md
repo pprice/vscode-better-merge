@@ -55,6 +55,10 @@ better-merge.accept.all-theirs
 
 ## Release Notes
 
+### 0.2.1
+ - Renamed commands
+ - Conflict parsing is now async
+
 ### 0.2.0
 - Expose commands for code lens actions
 - Add "accept all" commands
