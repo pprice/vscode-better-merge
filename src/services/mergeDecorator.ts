@@ -11,53 +11,15 @@ export default class MergeDectorator implements vscode.Disposable {
     // TODO: Move to config?
     private oursColorRgb = `32,200,94`;
     private theirsColorRgb = `24,134,255`;
+    private config: interfaces.IExtensionConfiguration = null;
 
-    constructor(private context: vscode.ExtensionContext, private tracker : interfaces.IDocumentMergeConflictTracker ) {
-        // Create decorators
-        this.decorations['ours.content'] = vscode.window.createTextEditorDecorationType({
-            backgroundColor: `rgba(${this.oursColorRgb}, 0.2)`,
-            isWholeLine: this.decorationUsesWholeLine,
-            overviewRulerColor: `rgba(${this.oursColorRgb}, 0.5)`,
-            overviewRulerLane: vscode.OverviewRulerLane.Full
-        });
-
-        this.decorations['ours.header'] = vscode.window.createTextEditorDecorationType({
-            // backgroundColor: 'rgba(255, 0, 0, 0.01)',
-            // border: '2px solid red',
-            isWholeLine: this.decorationUsesWholeLine,
-            backgroundColor: `rgba(${this.oursColorRgb}, 1.0)`,
-            color: 'white',
-            after: {
-                contentText: ' (Our Changes)',
-                color: 'rgba(0, 0, 0, 0.7)'
-            }
-        });
-
-        this.decorations['splitter'] = vscode.window.createTextEditorDecorationType({
-            backgroundColor: 'rgba(0, 0, 0, 0.25)',
-            color: 'white',
-            isWholeLine: this.decorationUsesWholeLine,
-        });
-
-        this.decorations['theirs.content'] = vscode.window.createTextEditorDecorationType({
-            backgroundColor: `rgba(${this.theirsColorRgb}, 0.2)`,
-            isWholeLine: this.decorationUsesWholeLine,
-            overviewRulerColor: `rgba(${this.theirsColorRgb}, 0.5)`,
-            overviewRulerLane: vscode.OverviewRulerLane.Full
-        });
-
-        this.decorations['theirs.header'] = vscode.window.createTextEditorDecorationType({
-            backgroundColor: `rgba(${this.theirsColorRgb}, 1.0)`,
-            color: 'white',
-            isWholeLine: this.decorationUsesWholeLine,
-            after: {
-                contentText: ' (Their Changes)',
-                color: 'rgba(0, 0, 0, 0.7)'
-            }
-        });
+    constructor(private context: vscode.ExtensionContext, private tracker: interfaces.IDocumentMergeConflictTracker) {
     }
 
-    begin() {
+    begin(config: interfaces.IExtensionConfiguration) {
+        this.config = config;
+        this.registerDecorationTypes(config);
+
         // Check if we already have a set of active windows, attempt to track these.
         vscode.window.visibleTextEditors.forEach(e => this.applyDecorations(e));
 
@@ -75,7 +37,69 @@ export default class MergeDectorator implements vscode.Disposable {
         }, null, this.context.subscriptions);
     }
 
+    configurationUpdated(config: interfaces.IExtensionConfiguration) {
+        this.config = config;
+        this.registerDecorationTypes(config);
 
+        // Re-apply the decoration
+        vscode.window.visibleTextEditors.forEach(e => {
+            this.removeDecorations(e);
+            this.applyDecorations(e);
+        });
+    }
+
+    private registerDecorationTypes(config: interfaces.IExtensionConfiguration) {
+
+        // Dispose of existing decorations
+        Object.keys(this.decorations).forEach(k => this.decorations[k].dispose());
+        this.decorations = {};
+
+        // None of our features are enabled
+        if (!config.enableDecorations || !config.enableEditorOverview) {
+            return;
+        }
+
+        // Create decorators
+        if (config.enableDecorations || config.enableEditorOverview) {
+            this.decorations['ours.content'] = vscode.window.createTextEditorDecorationType(
+                this.generateBlockRenderOptions(this.oursColorRgb, config)
+            );
+
+            this.decorations['theirs.content'] = vscode.window.createTextEditorDecorationType(
+                this.generateBlockRenderOptions(this.theirsColorRgb, config)
+            );
+        }
+
+        if (config.enableDecorations) {
+            this.decorations['ours.header'] = vscode.window.createTextEditorDecorationType({
+                // backgroundColor: 'rgba(255, 0, 0, 0.01)',
+                // border: '2px solid red',
+                isWholeLine: this.decorationUsesWholeLine,
+                backgroundColor: `rgba(${this.oursColorRgb}, 1.0)`,
+                color: 'white',
+                after: {
+                    contentText: ' (Our Changes)',
+                    color: 'rgba(0, 0, 0, 0.7)'
+                }
+            });
+
+            this.decorations['splitter'] = vscode.window.createTextEditorDecorationType({
+                backgroundColor: 'rgba(0, 0, 0, 0.25)',
+                color: 'white',
+                isWholeLine: this.decorationUsesWholeLine,
+            });
+
+            this.decorations['theirs.header'] = vscode.window.createTextEditorDecorationType({
+                backgroundColor: `rgba(${this.theirsColorRgb}, 1.0)`,
+                color: 'white',
+                isWholeLine: this.decorationUsesWholeLine,
+                after: {
+                    contentText: ' (Their Changes)',
+                    color: 'rgba(0, 0, 0, 0.7)'
+                }
+            });
+        }
+    }
 
     dispose() {
         if (this.decorations) {
@@ -87,7 +111,24 @@ export default class MergeDectorator implements vscode.Disposable {
         }
     }
 
-    private applyDecorationsFromEvent(eventDocument : vscode.TextDocument) {
+    private generateBlockRenderOptions(color: string, config: interfaces.IExtensionConfiguration): vscode.DecorationRenderOptions {
+
+        let renderOptions: any = {};
+
+        if (config.enableDecorations) {
+            renderOptions.backgroundColor = `rgba(${color}, 0.2)`;
+            renderOptions.isWholeLine = this.decorationUsesWholeLine;
+        }
+
+        if (config.enableEditorOverview) {
+            renderOptions.overviewRulerColor = `rgba(${color}, 0.5)`;
+            renderOptions.overviewRulerLane = vscode.OverviewRulerLane.Full;
+        }
+
+        return renderOptions;
+    }
+
+    private applyDecorationsFromEvent(eventDocument: vscode.TextDocument) {
         for (var i = 0; i < vscode.window.visibleTextEditors.length; i++) {
             if (vscode.window.visibleTextEditors[i].document === eventDocument) {
                 // Attempt to apply
@@ -97,7 +138,11 @@ export default class MergeDectorator implements vscode.Disposable {
     }
 
     private async applyDecorations(editor: vscode.TextEditor) {
-        if (!editor) { return; }
+        if (!editor || !editor.document) { return; }
+
+        if (!this.config || (!this.config.enableDecorations && !this.config.enableEditorOverview)) {
+            return;
+        }
 
         let conflicts = await this.tracker.getConflicts(editor.document);
 
@@ -118,24 +163,38 @@ export default class MergeDectorator implements vscode.Disposable {
 
         conflicts.forEach(conflict => {
             // TODO, this could be more effective, just call getMatchPositions once with a map of decoration to position
-            pushDecoration('ours.header', { range: conflict.ours.header });
             pushDecoration('ours.content', { range: conflict.ours.content });
-            pushDecoration('splitter', { range: conflict.splitter });
             pushDecoration('theirs.content', { range: conflict.theirs.content });
-            pushDecoration('theirs.header', { range: conflict.theirs.header });
+
+            if (this.config.enableDecorations) {
+                pushDecoration('ours.header', { range: conflict.ours.header });
+                pushDecoration('splitter', { range: conflict.splitter });
+                pushDecoration('theirs.header', { range: conflict.theirs.header });
+            }
         });
 
         // For each match we've generated, apply the generated decoration with the matching decoration type to the
         // editor instance. Keys in both matches and decorations should match.
-        Object.keys(matchDecorations).forEach(decorationSetName => {
-            editor.setDecorations(this.decorations[decorationSetName], matchDecorations[decorationSetName]);
+        Object.keys(matchDecorations).forEach(decorationKey => {
+            let decorationType = this.decorations[decorationKey];
+
+            if (decorationType) {
+                editor.setDecorations(decorationType, matchDecorations[decorationKey]);
+            }
         });
     }
 
     private removeDecorations(editor: vscode.TextEditor) {
         // Remove all decorations, there might be none
         Object.keys(this.decorations).forEach(decorationKey => {
-            editor.setDecorations(this.decorations[decorationKey], []);
+
+            // Race condition, while editing the settings, it's possible to
+            // generate regions before the configuration has been refreshed
+            let decorationType = this.decorations[decorationKey];
+
+            if (decorationType) {
+                editor.setDecorations(decorationType, []);
+            }
         });
     }
 }

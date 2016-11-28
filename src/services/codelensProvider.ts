@@ -5,14 +5,20 @@ import * as interfaces from './interfaces';
 export default class MergeConflictCodeLensProvider implements vscode.CodeLensProvider, vscode.Disposable {
 
     private disposables: vscode.Disposable[] = [];
+    private config : interfaces.IExtensionConfiguration;
 
     constructor(private context: vscode.ExtensionContext, private tracker: interfaces.IDocumentMergeConflictTracker) {
     }
 
-    begin() {
+    begin(config : interfaces.IExtensionConfiguration) {
+        this.config = config;
         this.disposables.push(
             vscode.languages.registerCodeLensProvider({ pattern: '**/*' }, this)
         );
+    }
+
+    configurationUpdated(config : interfaces.IExtensionConfiguration) {
+        this.config = config;
     }
 
     dispose() {
@@ -23,6 +29,10 @@ export default class MergeConflictCodeLensProvider implements vscode.CodeLensPro
     }
 
     async provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): Promise<vscode.CodeLens[]> {
+
+        if(!this.config || !this.config.enableCodeLens) {
+            return null;
+        }
 
         let conflicts = await this.tracker.getConflicts(document);
 
