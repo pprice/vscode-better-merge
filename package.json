@@ -8,6 +8,7 @@
         "name": "Phil Price",
         "url": "https://philprice.me"
     },
+    "license": "MIT",
     "bugs": {
         "url": "https://github.com/pprice/vscode-better-merge/issues"
     },
