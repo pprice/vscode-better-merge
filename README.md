@@ -50,7 +50,6 @@ better-merge.accept.all-theirs
 
  - [ ] Provide UI experience to track progress of each conflict across a single merge
  - [ ] Configuration for UI widgets (on/off etc)
- - [ ] Test on light and dark themes
  - [ ] Support non git conflicts
  - [ ] Scanning of non-open documents
  - [ ] Change highlighting / status when a merge conflict region is edited
