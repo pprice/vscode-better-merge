@@ -60,6 +60,10 @@ better-merge.accept.all-theirs
 
 ## Release Notes
 
+### 0.3.0
+ - Add user configuration
+ - Small UI Tweaks (naming consistency)
+
 ### 0.2.1
  - Renamed commands
  - Conflict parsing is now async
