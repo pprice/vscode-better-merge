@@ -27,6 +27,27 @@
     ],
     "main": "./out/src/extension",
     "contributes": {
+        "configuration": {
+            "type": "object",
+            "title": "Better Merge extension configuation",
+            "properties": {
+                "better-merge.enableEditorOverview": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Show merge conflicts in editor overview bar"
+                },
+                "better-merge.enableCodeLens": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Show codelens actions above merge conflicts"
+                },
+                "better-merge.enableDecorations": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Show inline editor decorations (coloring) for merge conflicts"
+                }
+            }
+        },
         "commands": [
             {
                 "category": "Better Merge",

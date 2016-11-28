@@ -11,6 +11,12 @@ export enum CommitType {
     Theirs
 }
 
+export interface IExtensionConfiguration {
+    enableCodeLens: boolean;
+    enableDecorations: boolean;
+    enableEditorOverview: boolean;
+}
+
 export interface IDocumentMergeConflict {
     range: vscode.Range;
     ours: IMergeRegion;
@@ -23,5 +29,5 @@ export interface IDocumentMergeConflict {
 
 export interface IDocumentMergeConflictTracker {
     getConflicts(document: vscode.TextDocument): PromiseLike<IDocumentMergeConflict[]>;
-    forget(document : vscode.TextDocument);
+    forget(document: vscode.TextDocument);
 }

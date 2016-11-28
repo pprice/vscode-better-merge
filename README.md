@@ -40,6 +40,11 @@ better-merge.accept.all-ours
 better-merge.accept.all-theirs
 ```
 
+### Configuration
+
+- `better-merge.enableCodeLens` (default: `true`) - Enable / disable inline code lens actions above merge conflict blocks
+- `better-merge.enableDecorations` (default: `true`) - Enable / disable additional editor decoration (background color, etc) of merge conflict blocks
+- `better-merge.enableEditorOverview` (default: `true`) - Enable / disable highlighting of merge conflicts in the editor overview area (right hand side)
 
 ## Installation
 
@@ -49,7 +54,6 @@ better-merge.accept.all-theirs
 ## TODO
 
  - [ ] Provide UI experience to track progress of each conflict across a single merge
- - [ ] Configuration for UI widgets (on/off etc)
  - [ ] Support non git conflicts
  - [ ] Scanning of non-open documents
  - [ ] Change highlighting / status when a merge conflict region is edited
