@@ -30,9 +30,7 @@ export default class MergeDectorator implements vscode.Disposable {
             after: {
                 contentText: ' (Our Changes)',
                 color: 'rgba(0, 0, 0, 0.7)'
-            },
-            gutterIconPath: context.asAbsolutePath('./img/merge-white.png'),
-            gutterIconSize: '75%'
+            }
         });
 
         this.decorations['splitter'] = vscode.window.createTextEditorDecorationType({
