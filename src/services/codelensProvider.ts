@@ -35,13 +35,13 @@ export default class MergeConflictCodeLensProvider implements vscode.CodeLensPro
         conflicts.forEach(conflict => {
             let acceptOursCommand: vscode.Command = {
                 command: 'better-merge.accept.ours',
-                title: `Accept Our Changes`,
+                title: `Accept our changes`,
                 arguments: ['known-conflict', conflict]
             };
 
             let acceptTheirsCommand: vscode.Command = {
                 command: 'better-merge.accept.theirs',
-                title: `Accept Their Changes`,
+                title: `Accept their changes`,
                 arguments: ['known-conflict', conflict]
             };
 
