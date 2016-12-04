@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import DocumentTracker from './documentTracker';
-import CodeLensProvider from './codeLensProvider';
+import CodeLensProvider from './codelensProvider';
 import CommandHandler from './commandHandler';
 import Decorator from './mergeDecorator';
 
