@@ -60,6 +60,9 @@ better-merge.accept.all-theirs
 
 ## Release Notes
 
+### 0.3.1
+ - Fix crash on startup for linux (or any other case sensitive file system).
+
 ### 0.3.0
  - Add user configuration
  - Small UI Tweaks (naming consistency)
@@ -73,6 +76,3 @@ better-merge.accept.all-theirs
 - Add "accept all" commands
 - Add "accept current" for focused conflict
 - Add "Next / Previous conflict" navigation
-
-### 0.1.3
-- Initial working version
