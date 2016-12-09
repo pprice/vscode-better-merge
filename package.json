@@ -52,28 +52,28 @@
         "commands": [
             {
                 "category": "Better Merge",
-                "title": "Accept all ours",
-                "command": "better-merge.accept.all-ours"
+                "title": "Accept all current",
+                "command": "better-merge.accept.all-current"
             },
             {
                 "category": "Better Merge",
-                "title": "Accept all theirs",
-                "command": "better-merge.accept.all-theirs"
-            },
-            {
-                "category": "Better Merge",
-                "title": "Accept ours",
-                "command": "better-merge.accept.ours"
-            },
-            {
-                "category": "Better Merge",
-                "title": "Accept theirs",
-                "command": "better-merge.accept.theirs"
+                "title": "Accept all incoming",
+                "command": "better-merge.accept.all-incoming"
             },
             {
                 "category": "Better Merge",
                 "title": "Accept current",
                 "command": "better-merge.accept.current"
+            },
+            {
+                "category": "Better Merge",
+                "title": "Accept incoming",
+                "command": "better-merge.accept.incoming"
+            },
+            {
+                "category": "Better Merge",
+                "title": "Accept selection",
+                "command": "better-merge.accept.selection"
             },
             {
                 "category": "Better Merge",
@@ -98,17 +98,17 @@
                 "key": "alt+m up"
             },
             {
-                "command": "better-merge.accept.current",
+                "command": "better-merge.accept.selection",
                 "when": "editorTextFocus",
                 "key": "alt+m enter"
             },
             {
-                "command": "better-merge.accept.ours",
+                "command": "better-merge.accept.current",
                 "when": "editorTextFocus",
                 "key": "alt+m 1"
             },
             {
-                "command": "better-merge.accept.theirs",
+                "command": "better-merge.accept.incoming",
                 "when": "editorTextFocus",
                 "key": "alt+m 2"
             }

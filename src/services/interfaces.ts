@@ -7,8 +7,8 @@ export interface IMergeRegion {
 }
 
 export enum CommitType {
-    Ours,
-    Theirs
+    Current,
+    Incoming
 }
 
 export interface IExtensionConfiguration {
@@ -19,8 +19,8 @@ export interface IExtensionConfiguration {
 
 export interface IDocumentMergeConflict {
     range: vscode.Range;
-    ours: IMergeRegion;
-    theirs: IMergeRegion;
+    current: IMergeRegion;
+    incoming: IMergeRegion;
     splitter: vscode.Range;
 
     commitEdit(type: CommitType, editor: vscode.TextEditor, edit?: vscode.TextEditorEdit);

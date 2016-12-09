@@ -4,14 +4,14 @@ import * as interfaces from './interfaces';
 export class DocumentMergeConflict implements interfaces.IDocumentMergeConflict {
 
     public range: vscode.Range;
-    public ours: interfaces.IMergeRegion;
-    public theirs: interfaces.IMergeRegion;
+    public current: interfaces.IMergeRegion;
+    public incoming: interfaces.IMergeRegion;
     public splitter: vscode.Range;
 
     constructor(document: vscode.TextDocument, match: RegExpExecArray, offsets?: number[]) {
         this.range = new vscode.Range(document.positionAt(match.index), document.positionAt(match.index + match[0].length));
 
-        this.ours = {
+        this.current = {
             name: match[2],
             header: this.getMatchPositions(document, match, 1, offsets),
             content: this.getMatchPositions(document, match, 3, offsets),
@@ -19,7 +19,7 @@ export class DocumentMergeConflict implements interfaces.IDocumentMergeConflict 
 
         this.splitter = this.getMatchPositions(document, match, 5, offsets);
 
-        this.theirs = {
+        this.incoming = {
             name: match[9],
             header: this.getMatchPositions(document, match, 8, offsets),
             content: this.getMatchPositions(document, match, 6, offsets),
@@ -38,11 +38,11 @@ export class DocumentMergeConflict implements interfaces.IDocumentMergeConflict 
     }
 
     public applyEdit(type: interfaces.CommitType, editor: vscode.TextEditor, edit: vscode.TextEditorEdit) : void {
-        if (type === interfaces.CommitType.Ours) {
-            edit.replace(this.range, editor.document.getText(this.ours.content));
+        if (type === interfaces.CommitType.Current) {
+            edit.replace(this.range, editor.document.getText(this.current.content));
         }
-        else if (type === interfaces.CommitType.Theirs) {
-            edit.replace(this.range, editor.document.getText(this.theirs.content));
+        else if (type === interfaces.CommitType.Incoming) {
+            edit.replace(this.range, editor.document.getText(this.incoming.content));
         }
     }
 
@@ -88,15 +88,15 @@ export class MergeConflictParser {
     static scanDocument(document: vscode.TextDocument): DocumentMergeConflict[] {
 
         // Match groups
-        // 1: "our" header
-        // 2: "our" name
-        // 3: "our" content
+        // 1: "current" header
+        // 2: "current" name
+        // 3: "current" content
         // 4: Garbage (rouge \n)
         // 5: Splitter
-        // 6: "their" content
+        // 6: "incoming" content
         // 7: Garbage  (rouge \n)
-        // 8: "their" header
-        // 9: "their" name
+        // 8: "incoming" header
+        // 9: "incoming" name
         const conflictMatcher = /(<<<<<<< (.+)\r?\n)^((.*\s)+?)(^=======\r?\n)^((.*\s)+?)(^>>>>>>> (.+)$)/mg;
         const offsetGroups = [1, 3, 5, 6, 8]; // Skip inner matches when calculating length
 

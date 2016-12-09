@@ -3,7 +3,7 @@ import * as interfaces from './interfaces';
 
 const messages = {
     cursorNotInConflict: 'Editor cursor is not within a merge conflict',
-    cursorOnSplitterRange: 'Editor cursor is within the merge conflict splitter, please move it to either the "ours" or "theirs" block',
+    cursorOnSplitterRange: 'Editor cursor is within the merge conflict splitter, please move it to either the "current" or "incoming" block',
     noConflicts: 'No merge conflicts found in this file',
     noOtherConflictsInThisFile: 'No other merge conflicts within this file'
 };
@@ -27,30 +27,30 @@ export default class CommandHandler implements vscode.Disposable {
 
     begin() {
         this.disposables.push(
-            vscode.commands.registerTextEditorCommand('better-merge.accept.ours', this.acceptOurs, this),
-            vscode.commands.registerTextEditorCommand('better-merge.accept.theirs', this.acceptTheirs, this),
             vscode.commands.registerTextEditorCommand('better-merge.accept.current', this.acceptCurrent, this),
-            vscode.commands.registerTextEditorCommand('better-merge.accept.all-ours', this.acceptAllOurs, this),
-            vscode.commands.registerTextEditorCommand('better-merge.accept.all-theirs', this.acceptAllTheirs, this),
+            vscode.commands.registerTextEditorCommand('better-merge.accept.incoming', this.acceptIncoming, this),
+            vscode.commands.registerTextEditorCommand('better-merge.accept.selection', this.acceptSelection, this),
+            vscode.commands.registerTextEditorCommand('better-merge.accept.all-current', this.acceptAllCurrent, this),
+            vscode.commands.registerTextEditorCommand('better-merge.accept.all-incoming', this.acceptAllIncoming, this),
             vscode.commands.registerTextEditorCommand('better-merge.next', this.navigateNext, this),
             vscode.commands.registerTextEditorCommand('better-merge.previous', this.navigatePrevious, this)
         );
     }
 
-    acceptOurs(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args): Promise<void> {
-        return this.accept(interfaces.CommitType.Ours, editor, ...args);
+    acceptCurrent(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args): Promise<void> {
+        return this.accept(interfaces.CommitType.Current, editor, ...args);
     }
 
-    acceptTheirs(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args): Promise<void> {
-        return this.accept(interfaces.CommitType.Theirs, editor, ...args);
+    acceptIncoming(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args): Promise<void> {
+        return this.accept(interfaces.CommitType.Incoming, editor, ...args);
     }
 
-    acceptAllOurs(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args): Promise<void> {
-        return this.acceptAll(interfaces.CommitType.Ours, editor);
+    acceptAllCurrent(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args): Promise<void> {
+        return this.acceptAll(interfaces.CommitType.Current, editor);
     }
 
-    acceptAllTheirs(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args): Promise<void> {
-        return this.acceptAll(interfaces.CommitType.Theirs, editor);
+    acceptAllIncoming(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args): Promise<void> {
+        return this.acceptAll(interfaces.CommitType.Incoming, editor);
     }
 
     navigateNext(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args): Promise<void> {
@@ -61,7 +61,7 @@ export default class CommandHandler implements vscode.Disposable {
         return this.navigate(editor, NavigationDirection.Backwards);
     }
 
-    async acceptCurrent(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args): Promise<void> {
+    async acceptSelection(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args): Promise<void> {
         let conflict = await this.findConflictContainingSelection(editor);
 
         if (!conflict) {
@@ -71,16 +71,16 @@ export default class CommandHandler implements vscode.Disposable {
 
         let typeToAccept: interfaces.CommitType = null;
 
-        // Figure out if the cursor is in ours or thiers, we do this by seeing if
+        // Figure out if the cursor is in current or incoming, we do this by seeing if
         // the active position is before or after the range of the splitter. We can
         // use this trick as the previous check in findConflictByActiveSelection will
-        // ensure it's within the conflict range, so we don't falsely identify "ours"
-        // or "thiers" if outside of a conflict range.
+        // ensure it's within the conflict range, so we don't falsely identify "current"
+        // or "incoming" if outside of a conflict range.
         if (editor.selection.active.isBefore(conflict.splitter.start)) {
-            typeToAccept = interfaces.CommitType.Ours;
+            typeToAccept = interfaces.CommitType.Current;
         }
         else if (editor.selection.active.isAfter(conflict.splitter.end)) {
-            typeToAccept = interfaces.CommitType.Theirs;
+            typeToAccept = interfaces.CommitType.Incoming;
         }
         else {
             vscode.window.showWarningMessage(messages.cursorOnSplitterRange);
