@@ -9,8 +9,8 @@ export default class MergeDectorator implements vscode.Disposable {
     private decorationUsesWholeLine: boolean = true; // Useful for debugging, set to false to see exact match ranges
 
     // TODO: Move to config?
-    private oursColorRgb = `32,200,94`;
-    private theirsColorRgb = `24,134,255`;
+    private currentColorRgb = `32,200,94`;
+    private incomingColorRgb = `24,134,255`;
     private config: interfaces.IExtensionConfiguration = null;
 
     constructor(private context: vscode.ExtensionContext, private tracker: interfaces.IDocumentMergeConflictTracker) {
@@ -61,24 +61,24 @@ export default class MergeDectorator implements vscode.Disposable {
 
         // Create decorators
         if (config.enableDecorations || config.enableEditorOverview) {
-            this.decorations['ours.content'] = vscode.window.createTextEditorDecorationType(
-                this.generateBlockRenderOptions(this.oursColorRgb, config)
+            this.decorations['current.content'] = vscode.window.createTextEditorDecorationType(
+                this.generateBlockRenderOptions(this.currentColorRgb, config)
             );
 
-            this.decorations['theirs.content'] = vscode.window.createTextEditorDecorationType(
-                this.generateBlockRenderOptions(this.theirsColorRgb, config)
+            this.decorations['incoming.content'] = vscode.window.createTextEditorDecorationType(
+                this.generateBlockRenderOptions(this.incomingColorRgb, config)
             );
         }
 
         if (config.enableDecorations) {
-            this.decorations['ours.header'] = vscode.window.createTextEditorDecorationType({
+            this.decorations['current.header'] = vscode.window.createTextEditorDecorationType({
                 // backgroundColor: 'rgba(255, 0, 0, 0.01)',
                 // border: '2px solid red',
                 isWholeLine: this.decorationUsesWholeLine,
-                backgroundColor: `rgba(${this.oursColorRgb}, 1.0)`,
+                backgroundColor: `rgba(${this.currentColorRgb}, 1.0)`,
                 color: 'white',
                 after: {
-                    contentText: ' (Our Changes)',
+                    contentText: ' (Current change)',
                     color: 'rgba(0, 0, 0, 0.7)'
                 }
             });
@@ -89,12 +89,12 @@ export default class MergeDectorator implements vscode.Disposable {
                 isWholeLine: this.decorationUsesWholeLine,
             });
 
-            this.decorations['theirs.header'] = vscode.window.createTextEditorDecorationType({
-                backgroundColor: `rgba(${this.theirsColorRgb}, 1.0)`,
+            this.decorations['incoming.header'] = vscode.window.createTextEditorDecorationType({
+                backgroundColor: `rgba(${this.incomingColorRgb}, 1.0)`,
                 color: 'white',
                 isWholeLine: this.decorationUsesWholeLine,
                 after: {
-                    contentText: ' (Their Changes)',
+                    contentText: ' (Incoming change)',
                     color: 'rgba(0, 0, 0, 0.7)'
                 }
             });
@@ -163,13 +163,13 @@ export default class MergeDectorator implements vscode.Disposable {
 
         conflicts.forEach(conflict => {
             // TODO, this could be more effective, just call getMatchPositions once with a map of decoration to position
-            pushDecoration('ours.content', { range: conflict.ours.content });
-            pushDecoration('theirs.content', { range: conflict.theirs.content });
+            pushDecoration('curent.content', { range: conflict.current.content });
+            pushDecoration('incoming.content', { range: conflict.incoming.content });
 
             if (this.config.enableDecorations) {
-                pushDecoration('ours.header', { range: conflict.ours.header });
+                pushDecoration('current.header', { range: conflict.current.header });
                 pushDecoration('splitter', { range: conflict.splitter });
-                pushDecoration('theirs.header', { range: conflict.theirs.header });
+                pushDecoration('incoming.header', { range: conflict.incoming.header });
             }
         });
 

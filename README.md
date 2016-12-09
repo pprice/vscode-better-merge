@@ -9,20 +9,20 @@ Avaliable on the [Visual Studio Extension Marketplace](https://marketplace.visua
 ## Features
 
  - Indivual conflicts are highlighted in each file
- - CodeLens actions to either accept "our" or "their" change
+ - CodeLens actions to either accept "current" or "incoming" change
  - Navigation shortcuts between conflicts
 
 ### Commands
 
 All commands use a double key chord combination by default. First press `Alt+M` then press the second key.
 
- - `Accept ours` - `Alt+M, 1` - Accept "our" change in the current conflict
- - `Accept theirs` - `Alt+M, 2` - Accept "their" change in the current conflict
- - `Accept current` - `Alt+M, Enter` - Accept the change the editor cursor is currenty within
+ - `Accept current` - `Alt+M, 1` - Accept current (local) change in the current conflict
+ - `Accept incoming` - `Alt+M, 2` - Accept incoming change in the current conflict
+ - `Accept selection` - `Alt+M, Enter` - Accept the change the editor cursor is currenty within
  - `Next conflict` - `Alm+M, Down Arrow` - Navigate to the next conflict in the current file
  - `Previous conflict` - `Alm+M, Down Arrow` - Navigate to the previous conflict in the current file
- - `Accept all ours` - Accpect all "our" changes in the current file
- - `Accept all thiers` - Accept all "their" changes in the current file
+ - `Accept all current` - Accpect all current changes in the current file
+ - `Accept all incoming` - Accept all incoming changes in the current file
 
 *NOTE*: All accept commands can be undone with Undo (`Ctrl+Z` / `Cmd+Z`)
 
@@ -31,13 +31,13 @@ All commands use a double key chord combination by default. First press `Alt+M` 
 The following commands are exposed if you wish to customize key bindings (*Preferences > Keyboard Shortcuts*)
 
 ```
-better-merge.accept.ours
-better-merge.accept.theirs
 better-merge.accept.current
+better-merge.accept.incoming
+better-merge.accept.selection
 better-merge.next
 better-merge.previous
-better-merge.accept.all-ours
-better-merge.accept.all-theirs
+better-merge.accept.all-current
+better-merge.accept.all-incoming
 ```
 
 ### Configuration
