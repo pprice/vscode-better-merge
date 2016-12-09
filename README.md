@@ -60,6 +60,9 @@ better-merge.accept.all-incoming
 
 ## Release Notes
 
+### 0.4.0
+ - Use "Current" and "Incoming" naming over "Ours" and "Theirs"
+
 ### 0.3.1
  - Fix crash on startup for linux (or any other case sensitive file system).
 
