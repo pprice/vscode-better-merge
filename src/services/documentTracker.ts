@@ -55,7 +55,7 @@ export default class DocumentMergeConflictTracker implements vscode.Disposable, 
     }
 
     private getCacheKey(document: vscode.TextDocument) {
-        if (document.uri && document.uri) {
+        if (document && document.uri) {
             return document.uri.toString();
         }
 
