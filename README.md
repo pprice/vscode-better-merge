@@ -63,22 +63,21 @@ better-merge.accept.all-incoming
 
 ## Release Notes
 
+### 0.5.0
+ - Add "Accept both" command and CodeLens action.
+
 ### 0.4.0
  - Use "Current" and "Incoming" naming over "Ours" and "Theirs"
 
-### 0.3.1
+### 0.3.x
  - Fix crash on startup for linux (or any other case sensitive file system).
-
-### 0.3.0
  - Add user configuration
  - Small UI Tweaks (naming consistency)
 
-### 0.2.1
+### 0.2.x
  - Renamed commands
  - Conflict parsing is now async
-
-### 0.2.0
-- Expose commands for code lens actions
-- Add "accept all" commands
-- Add "accept current" for focused conflict
-- Add "Next / Previous conflict" navigation
+ - Expose commands for code lens actions
+ - Add "accept all" commands
+ - Add "accept current" for focused conflict
+ - Add "Next / Previous conflict" navigation
