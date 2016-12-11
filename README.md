@@ -9,7 +9,8 @@ Avaliable on the [Visual Studio Extension Marketplace](https://marketplace.visua
 ## Features
 
  - Indivual conflicts are highlighted in each file
- - CodeLens actions to either accept "current" or "incoming" change
+ - Command palette commands for resolving and navigating between merge conflicts (see below)
+ - CodeLens actions to either accept "current", "incoming" or "both" changes
  - Navigation shortcuts between conflicts
 
 ### Commands
@@ -18,6 +19,7 @@ All commands use a double key chord combination by default. First press `Alt+M` 
 
  - `Accept current` - `Alt+M, 1` - Accept current (local) change in the current conflict
  - `Accept incoming` - `Alt+M, 2` - Accept incoming change in the current conflict
+ - `Accept both` - `Alt+M, 3` - Accept the union of both the current and incoming change for the current conflict
  - `Accept selection` - `Alt+M, Enter` - Accept the change the editor cursor is currenty within
  - `Next conflict` - `Alm+M, Down Arrow` - Navigate to the next conflict in the current file
  - `Previous conflict` - `Alm+M, Down Arrow` - Navigate to the previous conflict in the current file
@@ -33,6 +35,7 @@ The following commands are exposed if you wish to customize key bindings (*Prefe
 ```
 better-merge.accept.current
 better-merge.accept.incoming
+better-merge.accept.both
 better-merge.accept.selection
 better-merge.next
 better-merge.previous

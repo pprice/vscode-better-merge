@@ -30,6 +30,7 @@ export default class CommandHandler implements vscode.Disposable {
             vscode.commands.registerTextEditorCommand('better-merge.accept.current', this.acceptCurrent, this),
             vscode.commands.registerTextEditorCommand('better-merge.accept.incoming', this.acceptIncoming, this),
             vscode.commands.registerTextEditorCommand('better-merge.accept.selection', this.acceptSelection, this),
+            vscode.commands.registerTextEditorCommand('better-merge.accept.both', this.acceptBoth, this),
             vscode.commands.registerTextEditorCommand('better-merge.accept.all-current', this.acceptAllCurrent, this),
             vscode.commands.registerTextEditorCommand('better-merge.accept.all-incoming', this.acceptAllIncoming, this),
             vscode.commands.registerTextEditorCommand('better-merge.next', this.navigateNext, this),
@@ -43,6 +44,10 @@ export default class CommandHandler implements vscode.Disposable {
 
     acceptIncoming(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args): Promise<void> {
         return this.accept(interfaces.CommitType.Incoming, editor, ...args);
+    }
+
+    acceptBoth(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args): Promise<void> {
+        return this.accept(interfaces.CommitType.Both, editor, ...args);
     }
 
     acceptAllCurrent(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args): Promise<void> {
@@ -119,7 +124,7 @@ export default class CommandHandler implements vscode.Disposable {
 
         let conflict: interfaces.IDocumentMergeConflict = null;
 
-        // If launched with known context, take the conflict from that
+    // If launched with known context, take the conflict from that
         if (args[0] === 'known-conflict') {
             conflict = args[1];
         }

@@ -55,8 +55,17 @@ export default class MergeConflictCodeLensProvider implements vscode.CodeLensPro
                 arguments: ['known-conflict', conflict]
             };
 
-            items.push(new vscode.CodeLens(conflict.range, acceptCurrentCommand));
-            items.push(new vscode.CodeLens(conflict.range, acceptIncomingCommand));
+            let acceptBothCommand: vscode.Command = {
+                command: 'better-merge.accept.both',
+                title: `Accept both changes`,
+                arguments: ['known-conflict', conflict]
+            };
+
+            items.push(
+                new vscode.CodeLens(conflict.range, acceptCurrentCommand),
+                new vscode.CodeLens(conflict.range, acceptIncomingCommand),
+                new vscode.CodeLens(conflict.range, acceptBothCommand)
+            );
         });
 
         return items;
