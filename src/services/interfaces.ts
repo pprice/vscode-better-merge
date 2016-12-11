@@ -8,7 +8,8 @@ export interface IMergeRegion {
 
 export enum CommitType {
     Current,
-    Incoming
+    Incoming,
+    Both
 }
 
 export interface IExtensionConfiguration {

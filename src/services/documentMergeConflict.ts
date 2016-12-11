@@ -38,12 +38,40 @@ export class DocumentMergeConflict implements interfaces.IDocumentMergeConflict 
         return editor.edit((edit) => this.applyEdit(type, editor, edit));
     }
 
-    public applyEdit(type: interfaces.CommitType, editor: vscode.TextEditor, edit: vscode.TextEditorEdit) : void {
+    public applyEdit(type: interfaces.CommitType, editor: vscode.TextEditor, edit: vscode.TextEditorEdit): void {
+
+        // Each conflict is a set of ranges as follows, note placements or newlines
+        // which may not in in spans
+        // [ Conflict Range             -- (Entire content below)
+        //   [ Current Header ]\n       -- >>>>> Header
+        //   [ Current Content ]        -- (content)
+        //   [ Splitter ]\n             -- =====
+        //   [ Incoming Content ]       -- (content)
+        //   [ Incoming Header ]\n      -- <<<<< Incoming
+        // ]
         if (type === interfaces.CommitType.Current) {
+            // Replace [ Conflict Range ] with [ Current Content ]
             edit.replace(this.range, editor.document.getText(this.current.content));
         }
         else if (type === interfaces.CommitType.Incoming) {
+            // Replace [ Conflict Range ] with [ Incoming Content ]
             edit.replace(this.range, editor.document.getText(this.incoming.content));
+        }
+        else if (type === interfaces.CommitType.Both) {
+            // Replace [ Conflict Range ] with [ Current Content ] + \n + [ Incoming Content ]
+            //
+            // NOTE: Dude to headers and splitters NOT covering \n (this is so newlines inserted)
+            // by the user after (e.g. <<<<< HEAD do not fall into the header range but the
+            // content ranges), we can't push 3x deletes, we need to replace the range with the
+            // union of the content.
+
+            const currentContent = editor.document.getText(this.current.content);
+            const incomingContent = editor.document.getText(this.incoming.content);
+
+            edit.setEndOfLine(vscode.EndOfLine.LF);
+            let updatedContent = currentContent.concat('\n', incomingContent);
+
+            edit.replace(this.range, updatedContent);
         }
     }
 

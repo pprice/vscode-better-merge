@@ -77,6 +77,11 @@
             },
             {
                 "category": "Better Merge",
+                "title": "Accept both",
+                "command": "better-merge.accept.both"
+            },
+            {
+                "category": "Better Merge",
                 "title": "Next conflict",
                 "command": "better-merge.next"
             },
@@ -111,6 +116,11 @@
                 "command": "better-merge.accept.incoming",
                 "when": "editorTextFocus",
                 "key": "alt+m 2"
+            },
+            {
+                "command": "better-merge.accept.both",
+                "when": "editorTextFocus",
+                "key": "alt+m 3"
             }
         ]
     },
