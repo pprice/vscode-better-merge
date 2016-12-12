@@ -23,7 +23,7 @@ All commands use a double key chord combination by default. First press `Alt+M` 
  - `Accept selection` - `Alt+M, Enter` - Accept the change the editor cursor is currenty within
  - `Next conflict` - `Alm+M, Down Arrow` - Navigate to the next conflict in the current file
  - `Previous conflict` - `Alm+M, Down Arrow` - Navigate to the previous conflict in the current file
- - `Accept all current` - Accpect all current changes in the current file
+ - `Accept all current` - Accept all current changes in the current file
  - `Accept all incoming` - Accept all incoming changes in the current file
  - `Accept all both` - Accept all changes as a "both" merge in the current file
 
