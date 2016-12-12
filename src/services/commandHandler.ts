@@ -33,6 +33,7 @@ export default class CommandHandler implements vscode.Disposable {
             vscode.commands.registerTextEditorCommand('better-merge.accept.both', this.acceptBoth, this),
             vscode.commands.registerTextEditorCommand('better-merge.accept.all-current', this.acceptAllCurrent, this),
             vscode.commands.registerTextEditorCommand('better-merge.accept.all-incoming', this.acceptAllIncoming, this),
+            vscode.commands.registerTextEditorCommand('better-merge.accept.all-both', this.acceptAllBoth, this),
             vscode.commands.registerTextEditorCommand('better-merge.next', this.navigateNext, this),
             vscode.commands.registerTextEditorCommand('better-merge.previous', this.navigatePrevious, this)
         );
@@ -56,6 +57,10 @@ export default class CommandHandler implements vscode.Disposable {
 
     acceptAllIncoming(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args): Promise<void> {
         return this.acceptAll(interfaces.CommitType.Incoming, editor);
+    }
+
+    acceptAllBoth(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args): Promise<void> {
+        return this.acceptAll(interfaces.CommitType.Both, editor);
     }
 
     navigateNext(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args): Promise<void> {
