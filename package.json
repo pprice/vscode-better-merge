@@ -62,6 +62,11 @@
             },
             {
                 "category": "Better Merge",
+                "title": "Accept all both",
+                "command": "better-merge.accept.all-both"
+            },
+            {
+                "category": "Better Merge",
                 "title": "Accept current",
                 "command": "better-merge.accept.current"
             },
