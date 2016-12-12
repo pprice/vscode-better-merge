@@ -2,7 +2,7 @@
     "name": "better-merge",
     "displayName": "Better Merge",
     "description": "Improved git merge conflict support",
-    "version": "0.5.0",
+    "version": "0.5.1",
     "publisher": "pprice",
     "author": {
         "name": "Phil Price",

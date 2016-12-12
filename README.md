@@ -25,6 +25,7 @@ All commands use a double key chord combination by default. First press `Alt+M` 
  - `Previous conflict` - `Alm+M, Down Arrow` - Navigate to the previous conflict in the current file
  - `Accept all current` - Accpect all current changes in the current file
  - `Accept all incoming` - Accept all incoming changes in the current file
+ - `Accept all both` - Accept all changes as a "both" merge in the current file
 
 *NOTE*: All accept commands can be undone with Undo (`Ctrl+Z` / `Cmd+Z`)
 
@@ -41,6 +42,7 @@ better-merge.next
 better-merge.previous
 better-merge.accept.all-current
 better-merge.accept.all-incoming
+better-merge.accept.all-both
 ```
 
 ### Configuration
@@ -62,6 +64,9 @@ better-merge.accept.all-incoming
  - [ ] Change highlighting / status when a merge conflict region is edited
 
 ## Release Notes
+
+### 0.5.1
+ - Add "Accept all both" command
 
 ### 0.5.0
  - Add "Accept both" command and CodeLens action.
