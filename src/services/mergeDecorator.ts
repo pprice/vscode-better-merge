@@ -77,6 +77,7 @@ export default class MergeDectorator implements vscode.Disposable {
                 isWholeLine: this.decorationUsesWholeLine,
                 backgroundColor: `rgba(${this.currentColorRgb}, 1.0)`,
                 color: 'white',
+                textDecoration: 'none !important',
                 after: {
                     contentText: ' (Current change)',
                     color: 'rgba(0, 0, 0, 0.7)'
@@ -92,6 +93,7 @@ export default class MergeDectorator implements vscode.Disposable {
             this.decorations['incoming.header'] = vscode.window.createTextEditorDecorationType({
                 backgroundColor: `rgba(${this.incomingColorRgb}, 1.0)`,
                 color: 'white',
+                textDecoration: 'none !important',
                 isWholeLine: this.decorationUsesWholeLine,
                 after: {
                     contentText: ' (Incoming change)',
