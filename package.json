@@ -2,7 +2,7 @@
     "name": "better-merge",
     "displayName": "Better Merge",
     "description": "Improved git merge conflict support",
-    "version": "0.5.1",
+    "version": "0.6.0",
     "publisher": "pprice",
     "author": {
         "name": "Phil Price",
@@ -13,7 +13,7 @@
         "url": "https://github.com/pprice/vscode-better-merge/issues"
     },
     "engines": {
-        "vscode": "^1.5.0"
+        "vscode": "^1.10.0"
     },
     "icon": "img/app.png",
     "repository": {
