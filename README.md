@@ -65,6 +65,9 @@ better-merge.accept.all-both
 
 ## Release Notes
 
+### 0.6.0
+ - Update vscode engine version for 1.11.0 compatibility 
+
 ### 0.5.1
  - Add "Accept all both" command
 
