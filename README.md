@@ -1,14 +1,14 @@
 # vscode-better-merge
 
-Better visual merge conflict support for [Visual Studio Code](http://code.visualstudio.com/), insired by [merge-conflicts](https://atom.io/packages/merge-conflicts) for Atom.
+Better visual merge conflict support for [Visual Studio Code](http://code.visualstudio.com/), inspired by [merge-conflicts](https://atom.io/packages/merge-conflicts) for Atom.
 
 ![Demo animation 1](content/1.gif)
 
-Avaliable on the [Visual Studio Extension Marketplace](https://marketplace.visualstudio.com/items?itemName=pprice.better-merge).
+Available on the [Visual Studio Extension Marketplace](https://marketplace.visualstudio.com/items?itemName=pprice.better-merge).
 
 ## Features
 
- - Indivual conflicts are highlighted in each file
+ - Individual conflicts are highlighted in each file
  - Command palette commands for resolving and navigating between merge conflicts (see below)
  - CodeLens actions to either accept "current", "incoming" or "both" changes
  - Navigation shortcuts between conflicts
@@ -66,7 +66,7 @@ better-merge.accept.all-both
 ## Release Notes
 
 ### 0.6.0
- - Update vscode engine version for 1.11.0 compatibility 
+ - Update vscode engine version for 1.11.0 compatibility
 
 ### 0.5.1
  - Add "Accept all both" command
