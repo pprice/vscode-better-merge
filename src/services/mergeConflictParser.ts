@@ -16,7 +16,7 @@ export class MergeConflictParser {
         // 7: Garbage  (rouge \n)
         // 8: "incoming" header
         // 9: "incoming" name
-        const conflictMatcher = /(<<<<<<< (.+)\r?\n)^((.*\s)+?)(^=======\r?\n)^((.*\s)+?)(^>>>>>>> (.+)$)/mg;
+        const conflictMatcher = /(<<<<<<< (.+)\r?\n)^((.*\s)+?)(^=======\r?\n)(?:^((.*\s)+?))*?(^>>>>>>> (.+)$)/mg;
         const offsetGroups = [1, 3, 5, 6, 8]; // Skip inner matches when calculating length
 
         let result: DocumentMergeConflict[] = [];
