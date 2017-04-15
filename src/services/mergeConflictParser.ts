@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import * as interfaces from './interfaces';
 import { DocumentMergeConflict } from './documentMergeConflict';
+import * as vm from 'vm';
+import * as util from 'util';
 
 export class MergeConflictParser {
 
@@ -19,19 +21,33 @@ export class MergeConflictParser {
         const conflictMatcher = /(<<<<<<< (.+)\r?\n)^((.*\s)+?)(^=======\r?\n)(?:^((.*\s)+?))*?(^>>>>>>> (.+)$)/mg;
         const offsetGroups = [1, 3, 5, 6, 8]; // Skip inner matches when calculating length
 
-        let result: DocumentMergeConflict[] = [];
         let text = document.getText();
-        let match: RegExpExecArray;
-        while (match = conflictMatcher.exec(text)) {
-            // Esnure we don't get stuck in an infinite loop
-            if (match.index === conflictMatcher.lastIndex) {
-                conflictMatcher.lastIndex++;
-            }
-
-            result.push(new DocumentMergeConflict(document, match, offsetGroups));
+        let sandboxScope = {
+            result: [],
+            conflictMatcher,
+            text: text
+        };
+        const context = vm.createContext(sandboxScope);
+        const script = new vm.Script(`
+    let match;
+    while (match = conflictMatcher.exec(text)) {
+        // Ensure we don't get stuck in an infinite loop
+        if (match.index === conflictMatcher.lastIndex) {
+            conflictMatcher.lastIndex++;
         }
 
-        return result;
+        result.push(match);
+    }`);
+
+        try {
+            // If the regex takes longer than 1s consider it dead
+            script.runInContext(context, { timeout: 1000 });
+        }
+        catch (ex) {
+            return [];
+        }
+
+        return sandboxScope.result.map(match => new DocumentMergeConflict(document, match, offsetGroups));
     }
 
     static containsConflict(document: vscode.TextDocument): boolean {
