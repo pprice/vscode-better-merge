@@ -91,20 +91,23 @@ export class DocumentMergeConflict implements interfaces.IDocumentMergeConflict 
                 break;
             }
 
-            start += match[value].length;
+            start += match[value] !== undefined ? match[value].length : 0;
         }
 
-        let targetMatchLength = match[groupIndex].length;
+        const groupMatch = match[groupIndex];
+        let targetMatchLength = groupMatch !== undefined ? groupMatch.length : -1;
         let end = (start + targetMatchLength);
 
-        // Move the end up if it's capped by a trailing \r\n, this is so regions don't expand into
-        // the line below, and can be "pulled down" by editing the line below
-        if (match[groupIndex].lastIndexOf('\n') === targetMatchLength - 1) {
-            end--;
-
-            // .. for windows encodings of new lines
-            if (match[groupIndex].lastIndexOf('\r') === targetMatchLength - 2) {
+        if (groupMatch !== undefined) {
+            // Move the end up if it's capped by a trailing \r\n, this is so regions don't expand into
+            // the line below, and can be "pulled down" by editing the line below
+            if (match[groupIndex].lastIndexOf('\n') === targetMatchLength - 1) {
                 end--;
+
+                // .. for windows encodings of new lines
+                if (match[groupIndex].lastIndexOf('\r') === targetMatchLength - 2) {
+                    end--;
+                }
             }
         }
 
