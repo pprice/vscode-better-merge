@@ -29,15 +29,15 @@ export class MergeConflictParser {
         };
         const context = vm.createContext(sandboxScope);
         const script = new vm.Script(`
-    let match;
-    while (match = conflictMatcher.exec(text)) {
-        // Ensure we don't get stuck in an infinite loop
-        if (match.index === conflictMatcher.lastIndex) {
-            conflictMatcher.lastIndex++;
-        }
+            let match;
+            while (match = conflictMatcher.exec(text)) {
+                // Ensure we don't get stuck in an infinite loop
+                if (match.index === conflictMatcher.lastIndex) {
+                    conflictMatcher.lastIndex++;
+                }
 
-        result.push(match);
-    }`);
+                result.push(match);
+            }`);
 
         try {
             // If the regex takes longer than 1s consider it dead
