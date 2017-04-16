@@ -8,23 +8,11 @@ export class DocumentMergeConflict implements interfaces.IDocumentMergeConflict 
     public incoming: interfaces.IMergeRegion;
     public splitter: vscode.Range;
 
-    constructor(document: vscode.TextDocument, match: RegExpExecArray, offsets?: number[]) {
-        this.range = new vscode.Range(document.positionAt(match.index), document.positionAt(match.index + match[0].length));
-
-        this.current = {
-            name: match[2],
-            header: this.getMatchPositions(document, match, 1, offsets),
-            content: this.getMatchPositions(document, match, 3, offsets),
-        };
-
-        this.splitter = this.getMatchPositions(document, match, 5, offsets);
-
-        this.incoming = {
-            name: match[9],
-            header: this.getMatchPositions(document, match, 8, offsets),
-            content: this.getMatchPositions(document, match, 6, offsets),
-        };
-
+    constructor(document: vscode.TextDocument, descriptor: interfaces.IDocumentMergeConflictDescriptor) {
+        this.range = descriptor.range;
+        this.current = descriptor.current;
+        this.incoming = descriptor.incoming;
+        this.splitter = descriptor.splitter;
     }
 
     public commitEdit(type: interfaces.CommitType, editor: vscode.TextEditor, edit?: vscode.TextEditorEdit): Thenable<boolean> {
@@ -51,16 +39,17 @@ export class DocumentMergeConflict implements interfaces.IDocumentMergeConflict 
         // ]
         if (type === interfaces.CommitType.Current) {
             // Replace [ Conflict Range ] with [ Current Content ]
-            edit.replace(this.range, editor.document.getText(this.current.content));
+            var content = editor.document.getText(this.current.content);
+            this.replaceRangeWithContent(content, edit);
         }
         else if (type === interfaces.CommitType.Incoming) {
-            // Replace [ Conflict Range ] with [ Incoming Content ]
-            edit.replace(this.range, editor.document.getText(this.incoming.content));
+            var content = editor.document.getText(this.incoming.content);
+            this.replaceRangeWithContent(content, edit);
         }
         else if (type === interfaces.CommitType.Both) {
             // Replace [ Conflict Range ] with [ Current Content ] + \n + [ Incoming Content ]
             //
-            // NOTE: Dude to headers and splitters NOT covering \n (this is so newlines inserted)
+            // NOTE: Due to headers and splitters NOT covering \n (this is so newlines inserted)
             // by the user after (e.g. <<<<< HEAD do not fall into the header range but the
             // content ranges), we can't push 3x deletes, we need to replace the range with the
             // union of the content.
@@ -68,49 +57,44 @@ export class DocumentMergeConflict implements interfaces.IDocumentMergeConflict 
             const currentContent = editor.document.getText(this.current.content);
             const incomingContent = editor.document.getText(this.incoming.content);
 
-            edit.setEndOfLine(vscode.EndOfLine.LF);
-            let updatedContent = currentContent.concat('\n', incomingContent);
+            let finalContent = '';
 
-            edit.replace(this.range, updatedContent);
+            if(!this.isNewlineOnly(currentContent)) { 
+                finalContent += currentContent;
+            }
+
+            if(!this.isNewlineOnly(incomingContent)) { 
+                if(finalContent.length > 0) { 
+                    finalContent += '\n';
+                }
+
+                finalContent += incomingContent;
+            }
+
+            if(finalContent.length > 0 && !this.isNewlineOnly(finalContent)) { 
+                finalContent += '\n';
+            }
+
+            edit.setEndOfLine(vscode.EndOfLine.LF);
+            edit.replace(this.range, finalContent);
         }
     }
 
-    private getMatchPositions(document: vscode.TextDocument, match: RegExpExecArray, groupIndex: number, offsetGroups?: number[]): vscode.Range {
-        // Javascript doesnt give of offsets within the match, we need to calculate these
-        // based of the prior groups, skipping nested matches (yuck).
-        if (!offsetGroups) {
-            offsetGroups = match.map((i, idx) => idx);
+    private replaceRangeWithContent(content: string, edit: vscode.TextEditorEdit) {
+        if (this.isNewlineOnly(content)) {
+            edit.replace(this.range, '');
+            return;
         }
 
-        let start = match.index;
+        let updatedContent = content.concat('\n');
+        edit.setEndOfLine(vscode.EndOfLine.LF);
 
-        for (var i = 0; i < offsetGroups.length; i++) {
-            let value = offsetGroups[i];
+        // Replace [ Conflict Range ] with [ Current Content ]
 
-            if (value >= groupIndex) {
-                break;
-            }
+        edit.replace(this.range, updatedContent);
+    }
 
-            start += match[value] !== undefined ? match[value].length : 0;
-        }
-
-        const groupMatch = match[groupIndex];
-        let targetMatchLength = groupMatch !== undefined ? groupMatch.length : -1;
-        let end = (start + targetMatchLength);
-
-        if (groupMatch !== undefined) {
-            // Move the end up if it's capped by a trailing \r\n, this is so regions don't expand into
-            // the line below, and can be "pulled down" by editing the line below
-            if (match[groupIndex].lastIndexOf('\n') === targetMatchLength - 1) {
-                end--;
-
-                // .. for windows encodings of new lines
-                if (match[groupIndex].lastIndexOf('\r') === targetMatchLength - 2) {
-                    end--;
-                }
-            }
-        }
-
-        return new vscode.Range(document.positionAt(start), document.positionAt(end));
+    private isNewlineOnly(text: string) {
+        return text === '\n' || text === '\r\n';
     }
 }

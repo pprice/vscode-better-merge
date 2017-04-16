@@ -65,6 +65,10 @@ better-merge.accept.all-both
 
 ## Release Notes
 
+### 0.6.1
+ - Fixed handling of empty incoming or current merge bodies
+ - Fixed potential endless loop when parsing merge conflicts in open files
+
 ### 0.6.0
  - Update vscode engine version for 1.11.0 compatibility
 
@@ -82,10 +86,3 @@ better-merge.accept.all-both
  - Add user configuration
  - Small UI Tweaks (naming consistency)
 
-### 0.2.x
- - Renamed commands
- - Conflict parsing is now async
- - Expose commands for code lens actions
- - Add "accept all" commands
- - Add "accept current" for focused conflict
- - Add "Next / Previous conflict" navigation
