@@ -7,18 +7,16 @@ import * as util from 'util';
 export class MergeConflictParser {
 
     static scanDocument(document: vscode.TextDocument): interfaces.IDocumentMergeConflict[] {
-
-        // Match groups
-        // 1: "current" header
-        // 2: "current" name
-        // 3: "current" content
-        // 4: Garbage (rouge \n)
-        // 5: Splitter
-        // 6: "incoming" content
-        // 7: Garbage  (rouge \n)
-        // 8: "incoming" header
-        // 9: "incoming" name
-        const conflictMatcher = /(<<<<<<< (.+)\r?\n)^((.*\s)+?)(^=======\r?\n)(?:^((.*\s)+?))*?(^>>>>>>> (.+)$)/mg;
+        // Conflict matching regex, comments are in the format of "description - [group index] group name"
+        const conflictMatcher = new RegExp([
+                /(<<<<<<< (.+)\r?\n)/,          // "Current" conflict header - [1] entire line, [2] name
+                /^((.*\s)+?)/,                  // "Current" conflict body - [3] body text, [4] garbage
+                /(^=======\r?\n)/,              // Splitter - [5] entire line
+                /(?:^((.*\s)+?))*?/,            // Incoming conflict body - [6] content, [7] garbage
+                /(^>>>>>>> (.+)$)/              // Incoming conflict header - [8] entire line, [2] name
+            ].map(r => r.source).join(''), 
+            'mg');
+        
         const offsetGroups = [1, 3, 5, 6, 8]; // Skip inner matches when calculating length
 
         let text = document.getText();
