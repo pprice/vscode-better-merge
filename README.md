@@ -66,7 +66,7 @@ better-merge.accept.all-both
 ## Release Notes
 
 ### 0.6.1
- - Fixed handling of empty incoming merges 
+ - Fixed handling of empty incoming or current merge bodies
  - Fixed potential endless loop when parsing merge conflicts in open files
 
 ### 0.6.0
