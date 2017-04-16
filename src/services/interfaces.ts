@@ -18,14 +18,16 @@ export interface IExtensionConfiguration {
     enableEditorOverview: boolean;
 }
 
-export interface IDocumentMergeConflict {
+export interface IDocumentMergeConflict extends IDocumentMergeConflictDescriptor {
+    commitEdit(type: CommitType, editor: vscode.TextEditor, edit?: vscode.TextEditorEdit);
+    applyEdit(type: CommitType, editor: vscode.TextEditor, edit: vscode.TextEditorEdit);
+}
+
+export interface IDocumentMergeConflictDescriptor { 
     range: vscode.Range;
     current: IMergeRegion;
     incoming: IMergeRegion;
     splitter: vscode.Range;
-
-    commitEdit(type: CommitType, editor: vscode.TextEditor, edit?: vscode.TextEditorEdit);
-    applyEdit(type: CommitType, editor: vscode.TextEditor, edit: vscode.TextEditorEdit);
 }
 
 export interface IDocumentMergeConflictTracker {
