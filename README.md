@@ -26,6 +26,7 @@ All commands use a double key chord combination by default. First press `Alt+M` 
  - `Accept all current` - Accept all current changes in the current file
  - `Accept all incoming` - Accept all incoming changes in the current file
  - `Accept all both` - Accept all changes as a "both" merge in the current file
+  - `Compare current conflict` - Compares the active conflict in the VSCode diff utility 
 
 *NOTE*: All accept commands can be undone with Undo (`Ctrl+Z` / `Cmd+Z`)
 
@@ -43,6 +44,7 @@ better-merge.previous
 better-merge.accept.all-current
 better-merge.accept.all-incoming
 better-merge.accept.all-both
+better-merge.compare
 ```
 
 ### Configuration
@@ -64,6 +66,9 @@ better-merge.accept.all-both
  - [ ] Change highlighting / status when a merge conflict region is edited
 
 ## Release Notes
+
+### 0.7.0
+ - Add conflict diffing support via `Compare current conflict`
 
 ### 0.6.1
  - Fixed handling of empty incoming or current merge bodies

@@ -97,7 +97,7 @@
             },
             {
                 "category": "Better Merge",
-                "title": "Compare current changes",
+                "title": "Compare current change",
                 "command": "better-merge.compare"
             }
         ],
