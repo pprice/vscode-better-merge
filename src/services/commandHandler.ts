@@ -66,8 +66,19 @@ export default class CommandHandler implements vscode.Disposable {
         return this.acceptAll(interfaces.CommitType.Both, editor);
     }
 
-    compare(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, conflict: interfaces.IDocumentMergeConflict, ...args) {
+    async compare(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, conflict: interfaces.IDocumentMergeConflict, ...args) {
         const fileName = path.basename(editor.document.uri.fsPath);
+
+        // No conflict, command executed from command palette 
+        if(!conflict) { 
+            conflict = await this.findConflictContainingSelection(editor);
+
+            // Still failed to find conflict, warn the user and exit 
+            if(!conflict) { 
+                vscode.window.showWarningMessage(messages.cursorNotInConflict);
+                return;
+            }
+        }
 
         let range = conflict.current.content;
         const leftUri = editor.document.uri.with({
