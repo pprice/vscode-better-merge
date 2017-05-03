@@ -94,6 +94,11 @@
                 "category": "Better Merge",
                 "title": "Previous conflict",
                 "command": "better-merge.previous"
+            },
+            {
+                "category": "Better Merge",
+                "title": "Compare current changes",
+                "command": "better-merge.compare"
             }
         ],
         "keybindings": [

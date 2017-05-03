@@ -62,7 +62,7 @@ export default class MergeConflictCodeLensProvider implements vscode.CodeLensPro
             };
 
             let diffCommand: vscode.Command = {
-                command: 'better-merge.diff',
+                command: 'better-merge.compare',
                 title: `Compare changes`,
                 arguments: [conflict]
             };
