@@ -1,5 +1,7 @@
 import * as vscode from 'vscode';
 import * as interfaces from './interfaces';
+import ContentProvider from './contentProvider';
+import * as path from 'path';
 
 const messages = {
     cursorNotInConflict: 'Editor cursor is not within a merge conflict',
@@ -35,7 +37,8 @@ export default class CommandHandler implements vscode.Disposable {
             vscode.commands.registerTextEditorCommand('better-merge.accept.all-incoming', this.acceptAllIncoming, this),
             vscode.commands.registerTextEditorCommand('better-merge.accept.all-both', this.acceptAllBoth, this),
             vscode.commands.registerTextEditorCommand('better-merge.next', this.navigateNext, this),
-            vscode.commands.registerTextEditorCommand('better-merge.previous', this.navigatePrevious, this)
+            vscode.commands.registerTextEditorCommand('better-merge.previous', this.navigatePrevious, this),
+            vscode.commands.registerTextEditorCommand('better-merge.compare', this.compare, this)
         );
     }
 
@@ -61,6 +64,26 @@ export default class CommandHandler implements vscode.Disposable {
 
     acceptAllBoth(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args): Promise<void> {
         return this.acceptAll(interfaces.CommitType.Both, editor);
+    }
+
+    compare(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, conflict: interfaces.IDocumentMergeConflict, ...args) {
+        const fileName = path.basename(editor.document.uri.fsPath);
+
+        let range = conflict.current.content;
+        const leftUri = editor.document.uri.with({
+            scheme: ContentProvider.scheme,
+            query: JSON.stringify(range)
+        });
+
+        const leftTitle = `Current changes`; // (Ln ${range.start.line}${!range.isSingleLine ? `-${range.end.line}` : ''})`;
+
+        range = conflict.incoming.content;
+        const rightUri = leftUri.with({ query: JSON.stringify(range) });
+
+        const rightTitle = `Incoming changes`; // (Ln${range.start.line}${!range.isSingleLine ? `-${range.end.line}` : ''})`;
+
+        const title = `${fileName}: ${leftTitle} \u2194 ${rightTitle}`;
+        vscode.commands.executeCommand('vscode.diff', leftUri, rightUri, title);
     }
 
     navigateNext(editor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args): Promise<void> {
