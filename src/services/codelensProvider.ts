@@ -61,10 +61,17 @@ export default class MergeConflictCodeLensProvider implements vscode.CodeLensPro
                 arguments: ['known-conflict', conflict]
             };
 
+            let diffCommand: vscode.Command = {
+                command: 'better-merge.diff',
+                title: `Compare changes`,
+                arguments: [conflict]
+            };
+
             items.push(
                 new vscode.CodeLens(conflict.range, acceptCurrentCommand),
-                new vscode.CodeLens(conflict.range, acceptIncomingCommand),
-                new vscode.CodeLens(conflict.range, acceptBothCommand)
+                new vscode.CodeLens(conflict.range.with(conflict.range.start.with({ character: conflict.range.start.character + 1 })), acceptIncomingCommand),
+                new vscode.CodeLens(conflict.range.with(conflict.range.start.with({ character: conflict.range.start.character + 2 })), acceptBothCommand),
+                new vscode.CodeLens(conflict.range.with(conflict.range.start.with({ character: conflict.range.start.character + 3 })), diffCommand)
             );
         });
 
