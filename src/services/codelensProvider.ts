@@ -63,8 +63,8 @@ export default class MergeConflictCodeLensProvider implements vscode.CodeLensPro
 
             items.push(
                 new vscode.CodeLens(conflict.range, acceptCurrentCommand),
-                new vscode.CodeLens(conflict.range, acceptIncomingCommand),
-                new vscode.CodeLens(conflict.range, acceptBothCommand)
+                new vscode.CodeLens(conflict.range.with(conflict.range.start.with({ character: conflict.range.start.character + 1 })), acceptIncomingCommand),
+                new vscode.CodeLens(conflict.range.with(conflict.range.start.with({ character: conflict.range.start.character + 2 })), acceptBothCommand)
             );
         });
 
