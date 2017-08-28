@@ -30,6 +30,7 @@ Available on the [Visual Studio Extension Marketplace](https://marketplace.visua
 ### Commands
 
 All commands use a double key chord combination by default. First press `Alt+M` then press the second key.
+`Ctrl+M` for MacOS.
 
  - `Accept current` - `Alt+M, 1` - Accept current (local) change in the current conflict
  - `Accept incoming` - `Alt+M, 2` - Accept incoming change in the current conflict
